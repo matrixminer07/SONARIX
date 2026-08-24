@@ -1,0 +1,33 @@
+
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Ocean Debris &amp; Cleanup Tracking Dashboard</title>
+      <meta name="description" content="Tracks large plastic waste near state shorelines in real time, providing an interactive dashboard for public awareness and environmental action." />
+      <meta name="robots" content="noindex, nofollow" />
+      <style>html, body { height: 100%; margin: 0; } #root { height: 100%; }</style>
+      
+    </head>
+
+    <body>
+      <script>
+        // Redirect logic: check if user wants dashboard or other app page
+        const urlParams = new URLSearchParams(window.location.search);
+        const pageParam = urlParams.get('page');
+        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        
+        // If requesting a specific app page or already logged in, show the app
+        // Otherwise redirect to home page (which will link to login)
+        if (!pageParam && !isLoggedIn && window.location.pathname === '/') {
+          window.location.href = '/sonarix-home.html';
+        }
+      </script>
+      <div id="root"></div>
+      <script type="module" src="/src/main.tsx"></script>
+      
+    </body>
+  </html>
+  
