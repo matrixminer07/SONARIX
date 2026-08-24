@@ -1,377 +1,415 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>SONARIX — AI-Powered Underwater Debris &amp; Anomaly Detection</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --sx-abyss:#040a12;
-    --sx-deep:#081826;
-    --sx-panel:#0b1f30;
-    --sx-panel-2:#0d2434;
-    --sx-teal:#2dd4bf;
-    --sx-teal-dim:#1d9e88;
-    --sx-cyan:#67e8f9;
-    --sx-amber:#f0b429;
-    --sx-red:#e8615a;
-    --sx-text:#e7f2f4;
-    --sx-muted:#7d97a8;
-    --sx-muted-dim:#4d6373;
-    --sx-border:rgba(45,212,191,0.16);
-    --sx-border-strong:rgba(45,212,191,0.32);
-  }
-  *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  body{
-    margin:0; background:var(--sx-abyss); color:var(--sx-text);
-    font-family:'Inter',sans-serif; position:relative; overflow-x:hidden;
-  }
-  .mono{ font-family:'JetBrains Mono',monospace; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SONARIX — AI-Powered Underwater Debris &amp; Anomaly Detection</title>
+    <!-- Importing Fonts to match the design -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root{
+            --sx-abyss:#040a12;
+            --sx-deep:#081826;
+            --sx-panel:#0b1f30;
+            --sx-panel-2:#0d2434;
+            --sx-teal:#2dd4bf;
+            --sx-teal-dim:#1d9e88;
+            --sx-cyan:#67e8f9;
+            --sx-amber:#f0b429;
+            --sx-red:#e8615a;
+            --sx-text:#e7f2f4;
+            --sx-muted:#7d97a8;
+            --sx-muted-dim:#4d6373;
+            --sx-border:rgba(45,212,191,0.16);
+            --sx-border-strong:rgba(45,212,191,0.32);
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
 
-  /* ambient grid, full page */
-  .grid-overlay{
-    position:fixed; inset:0; z-index:0; pointer-events:none;
-    background-image:
-      linear-gradient(to right, rgba(103,232,249,0.03) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(103,232,249,0.03) 1px, transparent 1px);
-    background-size:44px 44px;
-    mask-image: radial-gradient(ellipse 70% 60% at 50% 15%, black 10%, transparent 70%);
-  }
+        *{box-sizing:border-box;}
+        html{scroll-behavior:smooth;}
+        body{
+            margin:0; background:transparent; color:var(--sx-text);
+            font-family:var(--font-sans); position:relative; overflow-x:hidden;
+            min-height: 100vh;
+        }
+        .mono{ font-family:var(--font-mono); }
 
-  /* ===== NAV ===== */
-  nav{
-    position:sticky; top:0; z-index:20;
-    display:flex; align-items:center; justify-content:space-between;
-    padding:18px 6vw; background:rgba(4,10,18,0.72); backdrop-filter:blur(6px);
-    border-bottom:1px solid var(--sx-border);
-  }
-  .nav-mark{ display:flex; align-items:center; gap:9px; }
-  .nav-mark svg{ width:22px; height:22px; }
-  .nav-mark span{ font-family:'JetBrains Mono',monospace; font-weight:600; font-size:16px; letter-spacing:3px; }
-  .nav-mark span em{ font-style:normal; color:var(--sx-teal); }
-  .nav-status{
-    display:flex; align-items:center; gap:7px; font-family:'JetBrains Mono',monospace;
-    font-size:10.5px; letter-spacing:1px; color:var(--sx-teal-dim); text-transform:uppercase;
-  }
-  .nav-dot{ width:6px; height:6px; border-radius:50%; background:var(--sx-teal); box-shadow:0 0 6px 1px var(--sx-teal); animation:dot-pulse 2s ease-in-out infinite; }
-  @keyframes dot-pulse{ 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+        /* Background Video & Overlays */
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -3;
+        }
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .overlay-tint {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(3, 10, 17, 0.95) 0%, rgba(3, 10, 17, 0.75) 50%, rgba(3, 10, 17, 0.6) 100%);
+            z-index: -2;
+        }
+        .overlay-grid{
+            position:fixed; inset:0; z-index:-1; pointer-events:none;
+            background-image:
+                linear-gradient(to right, rgba(103,232,249,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(103,232,249,0.03) 1px, transparent 1px);
+            background-size:44px 44px;
+            mask-image: radial-gradient(ellipse 70% 60% at 50% 15%, black 10%, transparent 70%);
+        }
 
-  /* ===== HERO ===== */
-  .hero{
-    position:relative; z-index:1;
-    display:grid; grid-template-columns:1.05fr 0.95fr; align-items:center;
-    gap:40px; padding:9vh 6vw 8vh; min-height:78vh;
-  }
-  .eyebrow{
-    display:inline-flex; align-items:center; gap:8px; padding:5px 12px;
-    border:1px solid var(--sx-border-strong); border-radius:2px;
-    font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:1.6px;
-    text-transform:uppercase; color:var(--sx-teal); margin-bottom:22px;
-  }
-  h1.title{
-    font-family:'JetBrains Mono',monospace; font-weight:600; font-size:44px;
-    line-height:1.15; letter-spacing:0.5px; margin:0 0 18px;
-  }
-  h1.title em{ font-style:normal; color:var(--sx-teal); }
-  .tagline{
-    font-size:17px; color:var(--sx-muted); line-height:1.6; max-width:480px; margin:0 0 8px;
-  }
-  .subtitle{
-    font-size:14px; color:var(--sx-muted-dim); line-height:1.6; max-width:480px; margin:0 0 34px;
-  }
-  .hero-ctas{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
-  .btn-primary{
-    display:inline-flex; align-items:center; gap:10px; padding:14px 26px;
-    background:var(--sx-teal); color:var(--sx-deep); border:1px solid var(--sx-teal);
-    font-family:'JetBrains Mono',monospace; font-size:12.5px; letter-spacing:2px;
-    text-transform:uppercase; font-weight:600; border-radius:2px; cursor:pointer;
-    text-decoration:none; transition:transform .12s ease, box-shadow .12s ease;
-  }
-  .btn-primary:hover{ box-shadow:0 0 0 4px rgba(45,212,191,0.14); transform:translateY(-1px); }
-  .btn-primary svg{ width:15px; height:15px; }
-  .btn-ghost{
-    font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:1.5px;
-    text-transform:uppercase; color:var(--sx-muted); text-decoration:none;
-    border-bottom:1px solid var(--sx-border-strong); padding-bottom:2px;
-  }
-  .btn-ghost:hover{ color:var(--sx-teal); }
+        /* ===== NAV ===== */
+        nav{
+            position:sticky; top:0; z-index:20;
+            display:flex; align-items:center; justify-content:space-between;
+            padding:18px 6vw; background:rgba(4,10,18,0.72); backdrop-filter:blur(6px);
+            border-bottom:1px solid var(--sx-border);
+        }
+        .nav-mark{ display:flex; align-items:center; gap:9px; }
+        .nav-mark svg{ width:22px; height:22px; }
+        .nav-mark span{ font-family:var(--font-mono); font-weight:600; font-size:16px; letter-spacing:3px; }
+        .nav-mark span em{ font-style:normal; color:var(--sx-teal); }
+        .nav-status{
+            display:flex; align-items:center; gap:7px; font-family:var(--font-mono);
+            font-size:10.5px; letter-spacing:1px; color:var(--sx-teal-dim); text-transform:uppercase;
+        }
+        .nav-dot{ width:6px; height:6px; border-radius:50%; background:var(--sx-teal); box-shadow:0 0 6px 1px var(--sx-teal); animation:dot-pulse 2s ease-in-out infinite; }
+        @keyframes dot-pulse{ 0%,100%{opacity:1;} 50%{opacity:0.35;} }
 
-  /* hero sonar visual */
-  .hero-sonar{ position:relative; width:100%; aspect-ratio:1/1; max-width:460px; margin:0 auto; }
-  .hero-sonar svg{ width:100%; height:100%; display:block; }
-  .ring{ fill:none; stroke:var(--sx-teal); }
-  .sweep-beam{ transform-origin:450px 450px; animation:rotate 6s linear infinite; }
-  @keyframes rotate{ to{ transform:rotate(360deg); } }
-  .blip{ animation: blip-pulse 3.4s ease-in-out infinite; }
-  @keyframes blip-pulse{ 0%,100%{opacity:0;} 8%{opacity:1;} 28%{opacity:0.15;} 45%{opacity:0.85;} 100%{opacity:0;} }
+        /* ===== HERO ===== */
+        .hero{
+            position:relative; z-index:1;
+            display:grid; grid-template-columns:1.05fr 0.95fr; align-items:center;
+            gap:40px; padding:9vh 6vw 8vh; min-height:78vh;
+        }
+        .eyebrow{
+            display:inline-flex; align-items:center; gap:8px; padding:5px 12px;
+            border:1px solid var(--sx-border-strong); border-radius:2px;
+            font-family:var(--font-mono); font-size:10.5px; letter-spacing:1.6px;
+            text-transform:uppercase; color:var(--sx-teal); margin-bottom:22px;
+            background: rgba(45,212,191,0.05);
+        }
+        h1.title{
+            font-family:var(--font-mono); font-weight:600; font-size:44px;
+            line-height:1.15; letter-spacing:0.5px; margin:0 0 18px;
+        }
+        h1.title em{ font-style:normal; color:var(--sx-teal); }
+        .tagline{
+            font-size:17px; color:var(--sx-muted); line-height:1.6; max-width:480px; margin:0 0 8px;
+        }
+        .subtitle{
+            font-size:14px; color:var(--sx-muted-dim); line-height:1.6; max-width:480px; margin:0 0 34px;
+        }
+        .hero-ctas{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+        .btn-primary{
+            display:inline-flex; align-items:center; gap:10px; padding:14px 26px;
+            background:var(--sx-teal); color:var(--sx-deep); border:1px solid var(--sx-teal);
+            font-family:var(--font-mono); font-size:12.5px; letter-spacing:2px;
+            text-transform:uppercase; font-weight:600; border-radius:2px; cursor:pointer;
+            text-decoration:none; transition:transform .12s ease, box-shadow .12s ease;
+        }
+        .btn-primary:hover{ box-shadow:0 0 0 4px rgba(45,212,191,0.14); transform:translateY(-1px); }
+        .btn-primary svg{ width:15px; height:15px; }
+        .btn-ghost{
+            font-family:var(--font-mono); font-size:11.5px; letter-spacing:1.5px;
+            text-transform:uppercase; color:var(--sx-muted); text-decoration:none;
+            border-bottom:1px solid var(--sx-border-strong); padding-bottom:2px;
+        }
+        .btn-ghost:hover{ color:var(--sx-teal); }
 
-  /* ===== SECTION shell ===== */
-  section{ position:relative; z-index:1; padding:6vh 6vw; }
-  .section-head{ text-align:center; max-width:640px; margin:0 auto 42px; }
-  .kicker{
-    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:2px;
-    text-transform:uppercase; color:var(--sx-teal-dim); margin-bottom:10px;
-  }
-  .section-title{ font-size:26px; font-weight:600; margin:0 0 10px; }
-  .section-desc{ color:var(--sx-muted); font-size:14.5px; line-height:1.6; }
+        /* hero sonar visual */
+        .hero-sonar{ position:relative; width:100%; aspect-ratio:1/1; max-width:460px; margin:0 auto; }
+        .hero-sonar svg{ width:100%; height:100%; display:block; }
+        .ring{ fill:none; stroke:var(--sx-teal); }
+        .sweep-beam{ transform-origin:450px 450px; animation:rotate 6s linear infinite; }
+        @keyframes rotate{ to{ transform:rotate(360deg); } }
+        .blip{ animation: blip-pulse 3.4s ease-in-out infinite; }
+        @keyframes blip-pulse{ 0%,100%{opacity:0;} 8%{opacity:1;} 28%{opacity:0.15;} 45%{opacity:0.85;} 100%{opacity:0;} }
 
-  /* ===== SNAPSHOT (metrics) ===== */
-  .snapshot{ background:var(--sx-deep); border-top:1px solid var(--sx-border); border-bottom:1px solid var(--sx-border); }
-  .metrics-grid{
-    display:grid; grid-template-columns:repeat(5,1fr); gap:14px; max-width:1180px; margin:0 auto;
-  }
-  .metric-card{
-    background:var(--sx-panel); border:1px solid var(--sx-border); border-radius:3px;
-    padding:20px 18px; position:relative;
-  }
-  .metric-card .m-icon{
-    width:30px; height:30px; border-radius:2px; background:rgba(45,212,191,0.1);
-    display:flex; align-items:center; justify-content:center; margin-bottom:14px;
-    color:var(--sx-teal);
-  }
-  .metric-card.warn .m-icon{ background:rgba(240,180,41,0.12); color:var(--sx-amber); }
-  .metric-card .m-icon svg{ width:16px; height:16px; }
-  .metric-val{ font-family:'JetBrains Mono',monospace; font-size:26px; font-weight:600; }
-  .metric-label{ font-size:11.5px; color:var(--sx-muted); margin-top:5px; letter-spacing:0.3px; }
-  .live-tag{
-    position:absolute; top:16px; right:16px; font-family:'JetBrains Mono',monospace;
-    font-size:9px; letter-spacing:1px; color:var(--sx-teal-dim); text-transform:uppercase;
-  }
+        /* ===== SECTION shell ===== */
+        section{ position:relative; z-index:1; padding:6vh 6vw; }
+        .section-head{ text-align:center; max-width:640px; margin:0 auto 42px; }
+        .kicker{
+            font-family:var(--font-mono); font-size:11px; letter-spacing:2px;
+            text-transform:uppercase; color:var(--sx-teal-dim); margin-bottom:10px;
+        }
+        .section-title{ font-size:26px; font-weight:600; margin:0 0 10px; }
+        .section-desc{ color:var(--sx-muted); font-size:14.5px; line-height:1.6; }
 
-  /* ===== CAPABILITIES ===== */
-  .cap-grid{
-    display:grid; grid-template-columns:repeat(3,1fr); gap:18px; max-width:1080px; margin:0 auto;
-  }
-  .cap-card{
-    background:var(--sx-panel); border:1px solid var(--sx-border); border-radius:3px; padding:22px;
-  }
-  .cap-card .c-icon{
-    width:34px; height:34px; border:1px solid var(--sx-border-strong); border-radius:2px;
-    display:flex; align-items:center; justify-content:center; margin-bottom:16px; color:var(--sx-teal);
-  }
-  .cap-card .c-icon svg{ width:17px; height:17px; }
-  .cap-card h3{ font-size:15px; font-weight:600; margin:0 0 8px; }
-  .cap-card p{ font-size:13px; color:var(--sx-muted); line-height:1.6; margin:0; }
+        /* ===== SNAPSHOT (metrics) ===== */
+        .snapshot{ background:rgba(8,24,38,0.85); border-top:1px solid var(--sx-border); border-bottom:1px solid var(--sx-border); backdrop-filter: blur(4px); }
+        .metrics-grid{
+            display:grid; grid-template-columns:repeat(5,1fr); gap:14px; max-width:1180px; margin:0 auto;
+        }
+        .metric-card{
+            background:var(--sx-panel); border:1px solid var(--sx-border); border-radius:3px;
+            padding:20px 18px; position:relative;
+        }
+        .metric-card .m-icon{
+            width:30px; height:30px; border-radius:2px; background:rgba(45,212,191,0.1);
+            display:flex; align-items:center; justify-content:center; margin-bottom:14px;
+            color:var(--sx-teal);
+        }
+        .metric-card.warn .m-icon{ background:rgba(240,180,41,0.12); color:var(--sx-amber); }
+        .metric-card .m-icon svg{ width:16px; height:16px; }
+        .metric-val{ font-family:var(--font-mono); font-size:26px; font-weight:600; }
+        .metric-label{ font-size:11.5px; color:var(--sx-muted); margin-top:5px; letter-spacing:0.3px; }
+        .live-tag{
+            position:absolute; top:16px; right:16px; font-family:var(--font-mono);
+            font-size:9px; letter-spacing:1px; color:var(--sx-teal-dim); text-transform:uppercase;
+        }
 
-  /* ===== ABOUT ===== */
-  .about-wrap{
-    display:grid; grid-template-columns:0.9fr 1.1fr; gap:50px; align-items:center;
-    max-width:1080px; margin:0 auto; background:var(--sx-panel); border:1px solid var(--sx-border);
-    border-radius:3px; padding:44px; position:relative;
-  }
-  .about-wrap::before{
-    content:''; position:absolute; top:-1px; left:-1px; right:-1px; height:2px;
-    background:linear-gradient(90deg, transparent, var(--sx-teal), transparent); opacity:0.6;
-  }
-  .about-wrap h2{ font-size:22px; margin:0 0 14px; }
-  .about-wrap p{ color:var(--sx-muted); font-size:14px; line-height:1.7; margin:0 0 20px; }
-  .about-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:11px; }
-  .about-list li{ display:flex; gap:10px; font-size:13.5px; color:var(--sx-text); align-items:flex-start; }
-  .about-list svg{ width:15px; height:15px; color:var(--sx-teal); flex-shrink:0; margin-top:2px; }
-  .about-readout{
-    font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--sx-muted-dim);
-    border-top:1px solid var(--sx-border); padding-top:16px; margin-top:20px; letter-spacing:0.5px;
-  }
+        /* ===== CAPABILITIES ===== */
+        .cap-grid{
+            display:grid; grid-template-columns:repeat(3,1fr); gap:18px; max-width:1080px; margin:0 auto;
+        }
+        .cap-card{
+            background:rgba(11,31,48,0.9); border:1px solid var(--sx-border); border-radius:3px; padding:22px; backdrop-filter: blur(4px);
+        }
+        .cap-card .c-icon{
+            width:34px; height:34px; border:1px solid var(--sx-border-strong); border-radius:2px;
+            display:flex; align-items:center; justify-content:center; margin-bottom:16px; color:var(--sx-teal);
+        }
+        .cap-card .c-icon svg{ width:17px; height:17px; }
+        .cap-card h3{ font-size:15px; font-weight:600; margin:0 0 8px; }
+        .cap-card p{ font-size:13px; color:var(--sx-muted); line-height:1.6; margin:0; }
 
-  /* ===== FINAL CTA STRIP ===== */
-  .cta-strip{
-    text-align:center; padding:8vh 6vw; border-top:1px solid var(--sx-border);
-  }
-  .cta-strip h2{ font-size:24px; margin:0 0 10px; }
-  .cta-strip p{ color:var(--sx-muted); font-size:14px; margin:0 0 30px; }
+        /* ===== ABOUT ===== */
+        .about-wrap{
+            display:grid; grid-template-columns:0.9fr 1.1fr; gap:50px; align-items:center;
+            max-width:1080px; margin:0 auto; background:rgba(11,31,48,0.9); border:1px solid var(--sx-border);
+            border-radius:3px; padding:44px; position:relative; backdrop-filter: blur(4px);
+        }
+        .about-wrap::before{
+            content:''; position:absolute; top:-1px; left:-1px; right:-1px; height:2px;
+            background:linear-gradient(90deg, transparent, var(--sx-teal), transparent); opacity:0.6;
+        }
+        .about-wrap h2{ font-size:22px; margin:0 0 14px; }
+        .about-wrap p{ color:var(--sx-muted); font-size:14px; line-height:1.7; margin:0 0 20px; }
+        .about-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:11px; }
+        .about-list li{ display:flex; gap:10px; font-size:13.5px; color:var(--sx-text); align-items:flex-start; }
+        .about-list svg{ width:15px; height:15px; color:var(--sx-teal); flex-shrink:0; margin-top:2px; }
+        .about-readout{
+            font-family:var(--font-mono); font-size:10.5px; color:var(--sx-muted-dim);
+            border-top:1px solid var(--sx-border); padding-top:16px; margin-top:20px; letter-spacing:0.5px;
+        }
 
-  /* ===== FOOTER ===== */
-  footer{
-    border-top:1px solid var(--sx-border); padding:22px 6vw;
-    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
-    font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--sx-muted-dim); letter-spacing:0.5px;
-  }
-  footer a{ color:var(--sx-muted-dim); text-decoration:none; margin-left:16px; }
-  footer a:hover{ color:var(--sx-teal); }
+        /* ===== FINAL CTA STRIP ===== */
+        .cta-strip{
+            text-align:center; padding:8vh 6vw; border-top:1px solid var(--sx-border);
+            background: rgba(4,10,18,0.7); backdrop-filter: blur(4px);
+        }
+        .cta-strip h2{ font-size:24px; margin:0 0 10px; }
+        .cta-strip p{ color:var(--sx-muted); font-size:14px; margin:0 0 30px; }
 
-  @media (max-width:900px){
-    .hero{ grid-template-columns:1fr; text-align:center; padding-top:6vh; }
-    .tagline,.subtitle{ margin-left:auto; margin-right:auto; }
-    .hero-ctas{ justify-content:center; }
-    .hero-sonar{ order:-1; max-width:320px; }
-    .metrics-grid{ grid-template-columns:repeat(2,1fr); }
-    .cap-grid{ grid-template-columns:1fr; }
-    .about-wrap{ grid-template-columns:1fr; padding:28px; }
-    h1.title{ font-size:32px; }
-  }
-</style>
+        /* ===== FOOTER ===== */
+        footer{
+            border-top:1px solid var(--sx-border); padding:22px 6vw;
+            display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
+            font-family:var(--font-mono); font-size:10.5px; color:var(--sx-muted-dim); letter-spacing:0.5px;
+            background:rgba(4,10,18,0.9);
+        }
+        footer a{ color:var(--sx-muted-dim); text-decoration:none; margin-left:16px; }
+        footer a:hover{ color:var(--sx-teal); }
+
+        @media (max-width:900px){
+            .hero{ grid-template-columns:1fr; text-align:center; padding-top:6vh; }
+            .tagline,.subtitle{ margin-left:auto; margin-right:auto; }
+            .hero-ctas{ justify-content:center; }
+            .hero-sonar{ order:-1; max-width:320px; }
+            .metrics-grid{ grid-template-columns:repeat(2,1fr); }
+            .cap-grid{ grid-template-columns:1fr; }
+            .about-wrap{ grid-template-columns:1fr; padding:28px; }
+            h1.title{ font-size:32px; }
+        }
+    </style>
 </head>
 <body>
 
-<div class="grid-overlay"></div>
+    <!-- Background Video Setup -->
+    <div class="video-container">
+        <video autoplay loop muted playsinline>
+            <source src="bg-video.mp4" type="video/mp4">
+        </video>
+    </div>
+    <div class="overlay-tint"></div>
+    <div class="overlay-grid"></div>
 
-<nav>
-  <div class="nav-mark">
-    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10.5" stroke="#2dd4bf" stroke-width="1.2" opacity="0.5"/><circle cx="12" cy="12" r="6.5" stroke="#2dd4bf" stroke-width="1.2" opacity="0.75"/><circle cx="12" cy="12" r="1.8" fill="#67e8f9"/><line x1="12" y1="12" x2="12" y2="2" stroke="#67e8f9" stroke-width="1.2"/></svg>
-    <span>SONAR<em>IX</em></span>
-  </div>
-  <div class="nav-status"><span class="nav-dot"></span>System operational</div>
-</nav>
+    <nav>
+        <div class="nav-mark">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10.5" stroke="#2dd4bf" stroke-width="1.2" opacity="0.5"/><circle cx="12" cy="12" r="6.5" stroke="#2dd4bf" stroke-width="1.2" opacity="0.75"/><circle cx="12" cy="12" r="1.8" fill="#67e8f9"/><line x1="12" y1="12" x2="12" y2="2" stroke="#67e8f9" stroke-width="1.2"/></svg>
+            <span>SONAR<em>IX</em></span>
+        </div>
+        <div class="nav-status"><span class="nav-dot"></span>System operational</div>
+    </nav>
 
-<header class="hero">
-  <div>
-    <div class="eyebrow">SIH 2026 · Marine survey intelligence</div>
-    <h1 class="title">AI-powered underwater<br/><em>debris &amp; anomaly</em> detection.</h1>
-    <p class="tagline">Automated analysis of side-scan sonar imagery for marine debris detection and survey prioritization.</p>
-    <p class="subtitle">Upload a survey, let SONARIX flag debris and unknown anomalies, verify with one click, export a geotagged report — built for survey operators, environmental teams, and AUV mission planners.</p>
-    <div class="hero-ctas">
-      <a class="btn-primary" href="sonarix-login.html">
-        Experience Sonarix
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-      </a>
-      <a class="btn-ghost" href="#about">What it does</a>
-    </div>
-  </div>
+    <header class="hero">
+        <div>
+            <div class="eyebrow">SIH 2026 · Marine survey intelligence</div>
+            <h1 class="title">AI-powered underwater<br/><em>debris &amp; anomaly</em> detection.</h1>
+            <p class="tagline">Automated analysis of side-scan sonar imagery for marine debris detection and survey prioritization.</p>
+            <p class="subtitle">Upload a survey, let SONARIX flag debris and unknown anomalies, verify with one click, export a geotagged report — built for survey operators, environmental teams, and AUV mission planners.</p>
+            <div class="hero-ctas">
+                <a class="btn-primary" href="#">
+                    Experience Sonarix
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </a>
+                <a class="btn-ghost" href="#about">What it does</a>
+            </div>
+        </div>
 
-  <div class="hero-sonar" aria-hidden="true">
-    <svg viewBox="0 0 900 900">
-      <circle class="ring" cx="450" cy="450" r="120" stroke-width="1" opacity="0.4"/>
-      <circle class="ring" cx="450" cy="450" r="220" stroke-width="1" opacity="0.3"/>
-      <circle class="ring" cx="450" cy="450" r="320" stroke-width="1" opacity="0.22"/>
-      <circle class="ring" cx="450" cy="450" r="420" stroke-width="1" opacity="0.14"/>
-      <g class="sweep-beam">
-        <defs>
-          <linearGradient id="sweepGrad2" x1="450" y1="450" x2="900" y2="450" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#2dd4bf" stop-opacity="0.4"/>
-            <stop offset="100%" stop-color="#2dd4bf" stop-opacity="0"/>
-          </linearGradient>
-          <clipPath id="sweepClip2"><circle cx="450" cy="450" r="420"/></clipPath>
-        </defs>
-        <g clip-path="url(#sweepClip2)"><path d="M450,450 L450,30 A420,420 0 0,1 597,79 Z" fill="url(#sweepGrad2)"/></g>
-        <line x1="450" y1="450" x2="450" y2="30" stroke="#67e8f9" stroke-width="1.5" opacity="0.85"/>
-      </g>
-      <circle class="blip" cx="610" cy="340" r="5" fill="#f0b429" style="animation-delay:0.2s"/>
-      <circle class="blip" cx="320" cy="560" r="4" fill="#2dd4bf" style="animation-delay:1.6s"/>
-      <circle class="blip" cx="560" cy="600" r="3.5" fill="#67e8f9" style="animation-delay:2.8s"/>
-      <circle class="blip" cx="290" cy="330" r="3.5" fill="#2dd4bf" style="animation-delay:4s"/>
-    </svg>
-  </div>
-</header>
+        <div class="hero-sonar" aria-hidden="true">
+            <svg viewBox="0 0 900 900">
+                <circle class="ring" cx="450" cy="450" r="120" stroke-width="1" opacity="0.4"/>
+                <circle class="ring" cx="450" cy="450" r="220" stroke-width="1" opacity="0.3"/>
+                <circle class="ring" cx="450" cy="450" r="320" stroke-width="1" opacity="0.22"/>
+                <circle class="ring" cx="450" cy="450" r="420" stroke-width="1" opacity="0.14"/>
+                <g class="sweep-beam">
+                    <defs>
+                        <linearGradient id="sweepGrad2" x1="450" y1="450" x2="900" y2="450" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#2dd4bf" stop-opacity="0.4"/>
+                            <stop offset="100%" stop-color="#2dd4bf" stop-opacity="0"/>
+                        </linearGradient>
+                        <clipPath id="sweepClip2"><circle cx="450" cy="450" r="420"/></clipPath>
+                    </defs>
+                    <g clip-path="url(#sweepClip2)"><path d="M450,450 L450,30 A420,420 0 0,1 597,79 Z" fill="url(#sweepGrad2)"/></g>
+                    <line x1="450" y1="450" x2="450" y2="30" stroke="#67e8f9" stroke-width="1.5" opacity="0.85"/>
+                </g>
+                <circle class="blip" cx="610" cy="340" r="5" fill="#f0b429" style="animation-delay:0.2s"/>
+                <circle class="blip" cx="320" cy="560" r="4" fill="#2dd4bf" style="animation-delay:1.6s"/>
+                <circle class="blip" cx="560" cy="600" r="3.5" fill="#67e8f9" style="animation-delay:2.8s"/>
+                <circle class="blip" cx="290" cy="330" r="3.5" fill="#2dd4bf" style="animation-delay:4s"/>
+            </svg>
+        </div>
+    </header>
 
-<section class="snapshot">
-  <div class="section-head">
-    <div class="kicker">Live system preview</div>
-    <div class="section-title">Operational snapshot</div>
-    <div class="section-desc">A running instance of SONARIX, mid-survey. Sign in to see your own fleet's numbers.</div>
-  </div>
-  <div class="metrics-grid">
-    <div class="metric-card">
-      <span class="live-tag">Live</span>
-      <div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg></div>
-      <div class="metric-val">1,204</div>
-      <div class="metric-label">Total uploads</div>
-    </div>
-    <div class="metric-card">
-      <span class="live-tag">Live</span>
-      <div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 0 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 0 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 0 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg></div>
-      <div class="metric-val">6</div>
-      <div class="metric-label">Processing jobs</div>
-    </div>
-    <div class="metric-card">
-      <span class="live-tag">Live</span>
-      <div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="0.6" fill="currentColor"/></svg></div>
-      <div class="metric-val">3,842</div>
-      <div class="metric-label">Detections found</div>
-    </div>
-    <div class="metric-card warn">
-      <span class="live-tag">Live</span>
-      <div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.3 3.9 2.6 18a1.8 1.8 0 0 0 1.6 2.7h15.6a1.8 1.8 0 0 0 1.6-2.7L13.7 3.9a1.8 1.8 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></div>
-      <div class="metric-val">57</div>
-      <div class="metric-label">Unknown anomalies</div>
-    </div>
-    <div class="metric-card">
-      <span class="live-tag">Live</span>
-      <div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3 8-8M20 12a8 8 0 1 1-4.4-7.1"/></svg></div>
-      <div class="metric-val">128</div>
-      <div class="metric-label">Pending reviews</div>
-    </div>
-  </div>
-</section>
+    <section class="snapshot">
+        <div class="section-head">
+            <div class="kicker">Live system preview</div>
+            <div class="section-title">Operational snapshot</div>
+            <div class="section-desc">A running instance of SONARIX, mid-survey. Sign in to see your own fleet's numbers.</div>
+        </div>
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <span class="live-tag">Live</span>
+                <div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg></div>
+                <div class="metric-val">1,204</div>
+                <div class="metric-label">Total uploads</div>
+            </div>
+            <div class="metric-card">
+                <span class="live-tag">Live</span>
+                <div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 0 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 0 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 0 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg></div>
+                <div class="metric-val">6</div>
+                <div class="metric-label">Processing jobs</div>
+            </div>
+            <div class="metric-card">
+                <span class="live-tag">Live</span>
+                <div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="0.6" fill="currentColor"/></svg></div>
+                <div class="metric-val">3,842</div>
+                <div class="metric-label">Detections found</div>
+            </div>
+            <div class="metric-card warn">
+                <span class="live-tag">Live</span>
+                <div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.3 3.9 2.6 18a1.8 1.8 0 0 0 1.6 2.7h15.6a1.8 1.8 0 0 0 1.6-2.7L13.7 3.9a1.8 1.8 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></div>
+                <div class="metric-val">57</div>
+                <div class="metric-label">Unknown anomalies</div>
+            </div>
+            <div class="metric-card">
+                <span class="live-tag">Live</span>
+                <div class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3 8-8M20 12a8 8 0 1 1-4.4-7.1"/></svg></div>
+                <div class="metric-val">128</div>
+                <div class="metric-label">Pending reviews</div>
+            </div>
+        </div>
+    </section>
 
-<section id="about">
-  <div class="section-head">
-    <div class="kicker">Capabilities</div>
-    <div class="section-title">Built for the full survey pipeline</div>
-    <div class="section-desc">From raw sonar file to a report you can hand to a cleanup crew.</div>
-  </div>
-  <div class="cap-grid">
-    <div class="cap-card">
-      <div class="c-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div>
-      <h3>Automated debris detection</h3>
-      <p>Classifies debris and marine objects directly from side-scan sonar imagery, no manual frame-by-frame review.</p>
-    </div>
-    <div class="cap-card">
-      <div class="c-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 9v4M12 17h.01M10.3 3.9 2.6 18a1.8 1.8 0 0 0 1.6 2.7h15.6a1.8 1.8 0 0 0 1.6-2.7L13.7 3.9a1.8 1.8 0 0 0-3.4 0z"/></svg></div>
-      <h3>Unknown anomaly flagging</h3>
-      <p>Surfaces patterns that don't fit known classes so a human can make the final call, instead of silently discarding them.</p>
-    </div>
-    <div class="cap-card">
-      <div class="c-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.4"/></svg></div>
-      <h3>Geotagged reporting</h3>
-      <p>Every export carries coordinates, timestamp, and sonar range, ready to hand to a cleanup or research crew.</p>
-    </div>
-    <div class="cap-card">
-      <div class="c-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18M7 15l4-6 4 3 4-8"/></svg></div>
-      <h3>Confidence scoring</h3>
-      <p>Every detection carries a confidence and anomaly score, so review time goes to the cases that actually need it.</p>
-    </div>
-    <div class="cap-card">
-      <div class="c-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 9h18M8 4v5"/></svg></div>
-      <h3>Fast human verification</h3>
-      <p>Verify, reject, or mark uncertain in one click, right from the sonar viewer, no context switching.</p>
-    </div>
-    <div class="cap-card">
-      <div class="c-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="2" width="10" height="20" rx="1.5"/><rect x="16" y="7" width="4" height="15" rx="1"/></svg></div>
-      <h3>Responsive by default</h3>
-      <p>The same review workflow works at a desk between two monitors or on a tablet on deck.</p>
-    </div>
-  </div>
-</section>
+    <section id="about">
+        <div class="section-head">
+            <div class="kicker">Capabilities</div>
+            <div class="section-title">Built for the full survey pipeline</div>
+            <div class="section-desc">From raw sonar file to a report you can hand to a cleanup crew.</div>
+        </div>
+        <div class="cap-grid">
+            <div class="cap-card">
+                <div class="c-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div>
+                <h3>Automated debris detection</h3>
+                <p>Classifies debris and marine objects directly from side-scan sonar imagery, no manual frame-by-frame review.</p>
+            </div>
+            <div class="cap-card">
+                <div class="c-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 9v4M12 17h.01M10.3 3.9 2.6 18a1.8 1.8 0 0 0 1.6 2.7h15.6a1.8 1.8 0 0 0 1.6-2.7L13.7 3.9a1.8 1.8 0 0 0-3.4 0z"/></svg></div>
+                <h3>Unknown anomaly flagging</h3>
+                <p>Surfaces patterns that don't fit known classes so a human can make the final call, instead of silently discarding them.</p>
+            </div>
+            <div class="cap-card">
+                <div class="c-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.4"/></svg></div>
+                <h3>Geotagged reporting</h3>
+                <p>Every export carries coordinates, timestamp, and sonar range, ready to hand to a cleanup or research crew.</p>
+            </div>
+            <div class="cap-card">
+                <div class="c-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18M7 15l4-6 4 3 4-8"/></svg></div>
+                <h3>Confidence scoring</h3>
+                <p>Every detection carries a confidence and anomaly score, so review time goes to the cases that actually need it.</p>
+            </div>
+            <div class="cap-card">
+                <div class="c-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 9h18M8 4v5"/></svg></div>
+                <h3>Fast human verification</h3>
+                <p>Verify, reject, or mark uncertain in one click, right from the sonar viewer, no context switching.</p>
+            </div>
+            <div class="cap-card">
+                <div class="c-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="2" width="10" height="20" rx="1.5"/><rect x="16" y="7" width="4" height="15" rx="1"/></svg></div>
+                <h3>Responsive by default</h3>
+                <p>The same review workflow works at a desk between two monitors or on a tablet on deck.</p>
+            </div>
+        </div>
+    </section>
 
-<section>
-  <div class="about-wrap">
-    <div>
-      <div class="kicker">About Sonarix</div>
-      <h2>Mission control for marine debris survey.</h2>
-      <p>SONARIX is an AI-powered platform for automated detection of marine debris and unknown anomalies in side-scan sonar imagery. It helps survey operators, environmental teams, and AUV mission planners reduce manual review time and prioritize cleanup operations.</p>
-      <div class="about-readout">SONAR·NAVIGATION·AND·RECOVERY·INTELLIGENCE·EXPLORER</div>
-    </div>
-    <ul class="about-list">
-      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg> Automated debris detection and classification</li>
-      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg> Unknown anomaly flagging for human review</li>
-      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg> Geotagged report generation</li>
-      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg> Confidence scoring and uncertainty visualization</li>
-      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg> Responsive dashboard for desktop and mobile</li>
-    </ul>
-  </div>
-</section>
+    <section>
+        <div class="about-wrap">
+            <div>
+                <div class="kicker">About Sonarix</div>
+                <h2>Mission control for marine debris survey.</h2>
+                <p>SONARIX is an AI-powered platform for automated detection of marine debris and unknown anomalies in side-scan sonar imagery. It helps survey operators, environmental teams, and AUV mission planners reduce manual review time and prioritize cleanup operations.</p>
+                <div class="about-readout">SONAR·NAVIGATION·AND·RECOVERY·INTELLIGENCE·EXPLORER</div>
+            </div>
+            <ul class="about-list">
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg> Automated debris detection and classification</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg> Unknown anomaly flagging for human review</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg> Geotagged report generation</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg> Confidence scoring and uncertainty visualization</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg> Responsive dashboard for desktop and mobile</li>
+            </ul>
+        </div>
+    </section>
 
-<section class="cta-strip">
-  <h2>Ready to see it running?</h2>
-  <p>Sign in and upload your first survey — SONARIX takes it from there.</p>
-  <a class="btn-primary" href="sonarix-login.html">
-    Experience Sonarix
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-  </a>
-</section>
+    <section class="cta-strip">
+        <h2>Ready to see it running?</h2>
+        <p>Sign in and upload your first survey — SONARIX takes it from there.</p>
+        <a class="btn-primary" href="#">
+            Experience Sonarix
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+    </section>
 
-<footer>
-  <span>SONARIX v1.0 — SIH 2026 MVP</span>
-  <span>
-    <a href="#">Documentation</a>
-    <a href="#">GitHub</a>
-    <a href="#">Contact</a>
-  </span>
-</footer>
+    <footer>
+        <span>SONARIX v1.0 — SIH 2026 MVP</span>
+        <span>
+            <a href="#">Documentation</a>
+            <a href="#">GitHub</a>
+            <a href="#">Contact</a>
+        </span>
+    </footer>
 
 </body>
 </html>
