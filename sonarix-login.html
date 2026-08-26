@@ -223,30 +223,6 @@
             box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.15);
         }
 
-        .biometric-btn {
-            width: 100%;
-            background: rgba(45, 212, 191, 0.08);
-            border: 1px dashed var(--sx-border-strong);
-            color: var(--sx-teal);
-            padding: 10px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            cursor: pointer;
-            margin-bottom: 1.2rem;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .biometric-btn:hover {
-            background: rgba(45, 212, 191, 0.15);
-            border-color: var(--sx-teal);
-        }
-
         .form-options {
             display: flex;
             justify-content: space-between;
@@ -404,10 +380,6 @@
                     <span class="status-dot"></span> Array Online — Awaiting Operator Credentials
                 </div>
             </div>
-
-            <button type="button" class="biometric-btn" onclick="alert('Initializing secure neural/biometric handshake...')">
-                <span>⚡ Initialize Biometric Handshake</span>
-            </button>
 
             <form>
                 <div class="form-group">
