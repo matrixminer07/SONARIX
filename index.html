@@ -144,8 +144,8 @@
 <!-- Auth Guard -->
 <script>
 (function() {
-    if (!sessionStorage.getItem('sonarix_auth')) {
-        window.location.href = 'sonarix-login.html';
+    if (!localStorage.getItem('isLoggedIn')) {
+        window.location.href = 'sonarix-home.html';
     }
 })();
 </script>
@@ -522,8 +522,8 @@
 <script>
     // Logout handler
     document.getElementById('logoutBtn').addEventListener('click', function() {
-        sessionStorage.removeItem('sonarix_auth');
-        sessionStorage.removeItem('sonarix_user');
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('sonarix_user');
         window.location.href = 'sonarix-home.html';
     });
 

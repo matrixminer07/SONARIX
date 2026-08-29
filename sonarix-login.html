@@ -332,14 +332,14 @@
             text.classList.remove('text-tertiary-fixed-dim');
 
             setTimeout(() => {
-                if (email === 'admin' && password === '12345') {
+                if (email === 'admin' && password === '123456') {
                     text.textContent = 'ACCESS GRANTED';
                     text.classList.remove('text-surface-tint');
                     text.classList.add('text-tertiary-fixed-dim');
 
-                    // Set authentication session
-                    sessionStorage.setItem('sonarix_auth', 'true');
-                    sessionStorage.setItem('sonarix_user', 'admin');
+                    // Set authentication session (matching React app's localStorage key)
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('sonarix_user', 'admin');
 
                     // Redirect to dashboard
                     setTimeout(() => {
