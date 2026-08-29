@@ -1,7 +1,7 @@
 ﻿import { useState, useCallback, useRef, useEffect } from "react";
 import {
   LayoutDashboard, Upload, Eye, FileText, Settings, Menu, X,
-  Bell, ChevronRight, TrendingUp, TrendingDown, Activity,
+  Bell, ChevronRight, Activity,
   AlertTriangle, CheckCircle2, XCircle, HelpCircle, Download,
   LogOut, User, Search, Filter, Plus, Layers, Cpu,
   Shield, Clock, BarChart2, RefreshCw, Send
@@ -116,6 +116,32 @@ const CLASS_DATA = [
   { class: "Unknown", count: 7 },
 ];
 
+// ─── Recent Activity ──────────────────────────────────────────────────────────
+
+interface ActivityItem {
+  id: string;
+  type: "upload" | "detection" | "export" | "review";
+  fileName: string;
+  status: "processing" | "completed" | "failed" | "reviewed";
+  timestamp: string;
+}
+
+const RECENT_ACTIVITY: ActivityItem[] = [
+  { id: "job_001", type: "upload", fileName: "sonar_0892_gulf.png", status: "completed", timestamp: "2026-08-26T10:30:00Z" },
+  { id: "det_045", type: "detection", fileName: "sonar_0891_northsea.png", status: "completed", timestamp: "2026-08-26T09:15:00Z" },
+  { id: "exp_012", type: "export", fileName: "baltic_b2_report.pdf", status: "completed", timestamp: "2026-08-26T08:42:00Z" },
+  { id: "job_002", type: "upload", fileName: "adriatic_s4_raw.png", status: "processing", timestamp: "2026-08-26T08:10:00Z" },
+  { id: "rev_088", type: "review", fileName: "scs_grid_p9.tiff", status: "reviewed", timestamp: "2026-08-26T07:55:00Z" },
+  { id: "job_003", type: "upload", fileName: "north_sea_route7.png", status: "failed", timestamp: "2026-08-25T22:30:00Z" },
+  { id: "det_046", type: "detection", fileName: "gulf_alpha_pass3.tiff", status: "completed", timestamp: "2026-08-25T21:18:00Z" },
+];
+
+// ─── System Status ────────────────────────────────────────────────────────────
+
+type SystemStatus = "operational" | "processing" | "maintenance";
+
+const SYSTEM_STATUS: SystemStatus = "processing"; // "🟡 Processing Jobs Running"
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const STATUS_COLOR: Record<string, string> = {
@@ -135,10 +161,6 @@ const CLASS_COLOR: Record<DetectionClass, string> = {
   UXO: "#ff8c00",
   Wreck: "#a855f7",
   Unknown: "#6a9db5",
-};
-
-const CLASS_BAR_COLOR: Record<string, string> = {
-  Mine: "#ff3b3b", Cable: "#00e5c4", UXO: "#ff8c00", Wreck: "#a855f7", Unknown: "#6a9db5",
 };
 
 function Badge({ label }: { label: string }) {
@@ -310,7 +332,7 @@ const PAGE_LABELS: Record<Page, string> = {
   review: "Detection Review", reports: "Reports", settings: "Settings",
 };
 
-function Navbar({ page, onMenuToggle }: { page: Page; onMenuToggle: () => void }) {
+function Navbar({ page, onMenuToggle, onSignOut }: { page: Page; onMenuToggle: () => void; onSignOut: () => void }) {
   return (
     <header className="h-14 border-b border-border bg-background flex items-center px-4 gap-4 shrink-0 z-30">
       <button onClick={onMenuToggle}
@@ -341,6 +363,10 @@ function Navbar({ page, onMenuToggle }: { page: Page; onMenuToggle: () => void }
             <div className="text-[10px] font-mono text-muted-foreground leading-none mt-0.5">Analyst</div>
           </div>
         </div>
+        <button onClick={onSignOut} className="lg:hidden flex items-center gap-2 px-2 py-1.5 text-xs font-mono text-muted-foreground hover:text-foreground transition-colors">
+          <LogOut size={13} />
+          <span>Sign out</span>
+        </button>
       </div>
     </header>
   );
@@ -356,11 +382,12 @@ const NAV_ITEMS = [
   { page: "settings" as Page, label: "Settings", icon: Settings },
 ];
 
-function Sidebar({ currentPage, onNavigate, isOpen, onClose }: {
+function Sidebar({ currentPage, onNavigate, isOpen, onClose, onSignOut }: {
   currentPage: Page;
   onNavigate: (p: Page) => void;
   isOpen: boolean;
   onClose: () => void;
+  onSignOut: () => void;
 }) {
   return (
     <>
@@ -405,7 +432,7 @@ function Sidebar({ currentPage, onNavigate, isOpen, onClose }: {
 
         <div className="p-4 border-t border-border space-y-3">
           <div className="text-[10px] font-mono text-muted-foreground/40 tracking-wider">v0.9.4-beta · secure</div>
-          <button className="w-full flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors">
+          <button onClick={onSignOut} className="w-full flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors">
             <LogOut size={13} />
             <span>Sign out</span>
           </button>
@@ -418,8 +445,8 @@ function Sidebar({ currentPage, onNavigate, isOpen, onClose }: {
 // ─── Login Page ───────────────────────────────────────────────────────────────
 
 function LoginPage({ onLogin }: { onLogin: () => void }) {
-  const [email, setEmail] = useState("analyst@sonarix.io");
-  const [password, setPassword] = useState("demo");
+  const [email, setEmail] = useState("admin");
+  const [password, setPassword] = useState("123456");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [remember, setRemember] = useState(false);
@@ -428,7 +455,20 @@ function LoginPage({ onLogin }: { onLogin: () => void }) {
     e.preventDefault();
     if (!email || !password) { setError("All fields required."); return; }
     setLoading(true); setError("");
-    setTimeout(() => { setLoading(false); onLogin(); }, 900);
+
+    // Check credentials
+    if (email === "admin" && password === "123456") {
+      setTimeout(() => {
+        setLoading(false);
+        localStorage.setItem('isLoggedIn', 'true');
+        onLogin();
+      }, 900);
+    } else {
+      setTimeout(() => {
+        setLoading(false);
+        setError("Invalid credentials. Use admin / 123456");
+      }, 900);
+    }
   };
 
   return (
@@ -692,16 +732,16 @@ function LoginPage({ onLogin }: { onLogin: () => void }) {
                 color: "#7d97a8",
                 marginBottom: "8px",
               }}>
-                Email
+                Username
               </label>
               <div style={{ position: "relative" }}>
                 <input
                   id="email"
-                  type="email"
+                  type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   autoComplete="username"
-                  placeholder="you@fleet.org"
+                  placeholder="admin"
                   style={{
                     width: "100%",
                     background: "#0d2434",
@@ -974,33 +1014,6 @@ function LoginPage({ onLogin }: { onLogin: () => void }) {
 
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 
-function StatCard({ icon: Icon, label, value, delta, deltaUp, color = "#00e5c4" }: {
-  icon: React.ElementType; label: string; value: string;
-  delta?: string; deltaUp?: boolean; color?: string;
-}) {
-  return (
-    <div className="sonarix-panel p-4 flex flex-col gap-3 relative"
-      style={{ backgroundColor: "var(--sx-panel)", borderColor: "var(--sx-border)" }}>
-      <div className="flex items-center justify-between">
-        <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">{label}</span>
-        <div className="w-8 h-8 border border-opacity-40 flex items-center justify-center transition-all hover:border-opacity-100"
-          style={{ borderColor: `${color}99`, backgroundColor: `${color}15` }}>
-          <Icon size={14} style={{ color, strokeWidth: 1.6 }} />
-        </div>
-      </div>
-      <div className="font-mono font-bold text-2xl text-foreground tabular-nums leading-none">{value}</div>
-      {delta && (
-        <div className="flex items-center gap-1.5 text-[10px] font-mono">
-          {deltaUp
-            ? <TrendingUp size={10} className="text-[#00e5c4]" />
-            : <TrendingDown size={10} className="text-[#ff3b3b]" />}
-          <span className={deltaUp ? "text-[#00e5c4]" : "text-[#ff3b3b]"}>{delta}</span>
-          <span className="text-muted-foreground">vs last week</span>
-        </div>
-      )}
-    </div>
-  );
-}
 
 const ChartTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
@@ -1021,18 +1034,110 @@ function DashboardPage({ jobs, onNavigate }: { jobs: Job[]; onNavigate: (p: Page
   const anomalies = jobs.reduce((s, j) => s + j.detections.filter(d => d.class === "Mine" || d.class === "UXO").length, 0);
   const pending = jobs.reduce((s, j) => s + j.detections.filter(d => d.status === "unreviewed").length, 0);
   const activeJobs = jobs.filter(j => j.status === "processing" || j.status === "ready").length;
+  const totalUploads = jobs.length;
+
+  // ── Metric Cards (PRD 4.1) ──
+  const metrics = [
+    { icon: Layers, label: "Total Uploads", value: String(totalUploads), navigateTo: "upload" as Page, color: "#00e5c4" },
+    { icon: Cpu, label: "Processing Jobs", value: String(activeJobs), navigateTo: "dashboard" as Page, color: "#ff8c00" },
+    { icon: BarChart2, label: "Detections Found", value: String(totalDetections), navigateTo: "review" as Page, color: "#00e5c4" },
+    { icon: AlertTriangle, label: "Unknown Anomalies", value: String(anomalies), navigateTo: "review" as Page, color: "#ff3b3b" },
+    { icon: Clock, label: "Pending Reviews", value: String(pending), navigateTo: "review" as Page, color: "#a855f7" },
+  ];
+
+  // ── Quick Actions (PRD 4.2) ──
+  const quickActions = [
+    { icon: Upload, label: "Upload Sonar Image", desc: "Submit new scan", navigateTo: "upload" as Page, primary: true },
+    { icon: Eye, label: "Review Detections", desc: "Verify findings", navigateTo: "review" as Page, primary: false },
+    { icon: FileText, label: "Export Reports", desc: "Generate exports", navigateTo: "reports" as Page, primary: false },
+    { icon: Settings, label: "View Settings", desc: "Configure system", navigateTo: "settings" as Page, primary: false },
+  ];
+
+  const STATUS_ICONS: Record<string, React.ElementType> = {
+    processing: RefreshCw,
+    completed: CheckCircle2,
+    failed: XCircle,
+    reviewed: Eye,
+  };
+
+  const STATUS_COLORS: Record<string, string> = {
+    processing: "#ff8c00",
+    completed: "#00e5c4",
+    failed: "#ff3b3b",
+    reviewed: "#a855f7",
+  };
+
+  const SYSTEM_STATUS_CONFIG: Record<SystemStatus, { label: string; color: string; emoji: string }> = {
+    operational: { label: "System Operational", color: "#00e5c4", emoji: "🟢" },
+    processing: { label: "Processing Jobs Running", color: "#ff8c00", emoji: "🟡" },
+    maintenance: { label: "System Maintenance", color: "#ff3b3b", emoji: "🔴" },
+  };
+
+  const sysStatus = SYSTEM_STATUS_CONFIG[SYSTEM_STATUS];
 
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto">
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        <StatCard icon={Layers} label="Total Uploads" value={String(jobs.length)} delta="+2 jobs" deltaUp />
-        <StatCard icon={Cpu} label="Active Jobs" value={String(activeJobs)} color="#ff8c00" />
-        <StatCard icon={BarChart2} label="Detections" value={String(totalDetections)} delta="+12 today" deltaUp />
-        <StatCard icon={AlertTriangle} label="Anomalies" value={String(anomalies)} color="#ff3b3b" delta="+3" deltaUp={false} />
-        <StatCard icon={Clock} label="Pending Review" value={String(pending)} color="#a855f7" />
+      {/* System Status Badge (PRD 4.4) */}
+      <div className="flex items-center justify-between mb-2">
+        <div>
+          <h1 className="font-mono text-xl font-bold text-foreground uppercase tracking-widest">Mission Control</h1>
+          <p className="text-sm text-muted-foreground mt-1">Real-time operational snapshot of your sonar survey fleet.</p>
+        </div>
+        <div className="flex items-center gap-2 px-3 py-2 border rounded-[2px]"
+          style={{ borderColor: `${sysStatus.color}55`, backgroundColor: `${sysStatus.color}12` }}>
+          <span style={{ fontSize: "14px" }}>{sysStatus.emoji}</span>
+          <span className="font-mono text-xs font-bold uppercase tracking-widest" style={{ color: sysStatus.color }}>
+            {sysStatus.label}
+          </span>
+        </div>
+      </div>
+
+      {/* Metrics Display (PRD 4.1) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        {metrics.map(m => (
+          <button key={m.label} onClick={() => onNavigate(m.navigateTo)}
+            className={`sonarix-panel p-4 flex flex-col gap-3 relative text-left transition-all hover:-translate-y-0.5 hover:shadow-lg cursor-pointer group
+              ${m.navigateTo !== "dashboard" ? "hover:border-primary/50" : ""}`}
+            style={{ backgroundColor: "var(--sx-panel)", borderColor: "var(--sx-border)" }}>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">{m.label}</span>
+              <div className="w-8 h-8 border border-opacity-40 flex items-center justify-center transition-all group-hover:border-opacity-100"
+                style={{ borderColor: `${m.color}99`, backgroundColor: `${m.color}15` }}>
+                <m.icon size={14} style={{ color: m.color, strokeWidth: 1.6 }} />
+              </div>
+            </div>
+            <div className="font-mono font-bold text-2xl text-foreground tabular-nums leading-none group-hover:text-primary transition-colors">{m.value}</div>
+            <div className="flex items-center gap-1 text-[10px] font-mono text-muted-foreground/60 opacity-0 group-hover:opacity-100 transition-opacity">
+              <ChevronRight size={10} /> View
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {/* Quick Actions (PRD 4.2) */}
+      <div>
+        <h2 className="font-mono text-sm font-bold text-foreground uppercase tracking-widest mb-3">Quick Actions</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {quickActions.map(a => (
+            <button key={a.label} onClick={() => onNavigate(a.navigateTo)}
+              className={`flex flex-col items-start gap-3 p-4 border rounded-[2px] text-left transition-all hover:-translate-y-0.5
+                ${a.primary
+                  ? "bg-primary/10 border-primary/40 hover:bg-primary/20"
+                  : "bg-secondary border-border hover:border-primary/30"}`}>
+              <div className={`w-10 h-10 flex items-center justify-center ${a.primary ? "bg-primary/20 text-primary" : "bg-background text-muted-foreground"}`}>
+                <a.icon size={18} />
+              </div>
+              <div>
+                <div className={`text-sm font-semibold ${a.primary ? "text-primary" : "text-foreground"}`}>{a.label}</div>
+                <div className="text-xs text-muted-foreground mt-0.5">{a.desc}</div>
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Detection Trend Chart */}
         <div className="lg:col-span-2 sonarix-panel primary-panel p-4">
           <span className="corner tl" /><span className="corner tr" /><span className="corner bl" /><span className="corner br" />
           <div className="flex items-center justify-between mb-4">
@@ -1065,6 +1170,7 @@ function DashboardPage({ jobs, onNavigate }: { jobs: Job[]; onNavigate: (p: Page
           </ResponsiveContainer>
         </div>
 
+        {/* By Class Chart */}
         <div className="sonarix-panel p-4"
           style={{ backgroundColor: "var(--sx-panel)", borderColor: "var(--sx-border)" }}>
           <div className="flex items-center justify-between mb-4">
@@ -1096,53 +1202,65 @@ function DashboardPage({ jobs, onNavigate }: { jobs: Job[]; onNavigate: (p: Page
         </div>
       </div>
 
+      {/* Recent Activity Feed (PRD 4.3) */}
       <div className="sonarix-panel primary-panel">
         <span className="corner tl" /><span className="corner tr" /><span className="corner bl" /><span className="corner br" />
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border flex-wrap gap-2">
-          <h3 className="font-mono text-sm font-bold text-foreground uppercase tracking-widest">Recent Jobs</h3>
-          <div className="flex gap-2">
-            <button onClick={() => onNavigate("upload")}
-              className="flex items-center gap-1.5 text-xs font-mono px-3 py-1.5 bg-primary/10 border border-primary/30
-                text-primary hover:bg-primary/20 transition-colors">
-              <Plus size={11} /> New Upload
-            </button>
-            <button onClick={() => onNavigate("reports")}
-              className="flex items-center gap-1.5 text-xs font-mono px-3 py-1.5 border border-border
-                text-muted-foreground hover:text-foreground transition-colors">
-              <FileText size={11} /> Reports
-            </button>
-          </div>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+          <h3 className="font-mono text-sm font-bold text-foreground uppercase tracking-widest">Recent Activity</h3>
+          <button onClick={() => onNavigate("reports")}
+            className="flex items-center gap-1.5 text-xs font-mono px-3 py-1.5 border border-border
+              text-muted-foreground hover:text-foreground transition-colors">
+            <FileText size={11} /> Reports
+          </button>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs min-w-[600px]">
-            <thead>
-              <tr className="border-b border-border">
-                {["Job ID", "Mission", "Location", "Date", "Detections", "Status", ""].map(h => (
-                  <th key={h} className="px-4 py-2.5 text-left font-mono text-muted-foreground/50 uppercase tracking-widest font-normal text-[10px]">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {jobs.map(job => (
-                <tr key={job.id} className="border-b border-border/40 hover:bg-background/30 transition-colors">
-                  <td className="px-4 py-3 font-mono text-primary text-[11px]">{job.id}</td>
-                  <td className="px-4 py-3 text-foreground font-medium">{job.mission}</td>
-                  <td className="px-4 py-3 text-muted-foreground font-mono text-[11px]">{job.location}</td>
-                  <td className="px-4 py-3 text-muted-foreground font-mono text-[11px]">{job.date}</td>
-                  <td className="px-4 py-3 font-mono font-bold text-foreground">{job.detections.length}</td>
-                  <td className="px-4 py-3"><Badge label={job.status} /></td>
-                  <td className="px-4 py-3">
-                    {(job.status === "ready" || job.status === "reviewed") && (
-                      <button onClick={() => onNavigate("review", job.id)}
-                        className="flex items-center gap-1 text-[11px] font-mono text-primary hover:text-primary/70 transition-colors">
-                        <Eye size={11} /> Review
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="divide-y divide-border/40">
+          {RECENT_ACTIVITY.slice(0, 7).map(item => {
+            const Icon = STATUS_ICONS[item.status];
+            const color = STATUS_COLORS[item.status];
+            const navTarget = item.type === "upload" ? "upload" : item.type === "export" ? "reports" : "review";
+            return (
+              <button key={item.id} onClick={() => onNavigate(navTarget as Page)}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-background/30 transition-colors text-left">
+                <div className="w-8 h-8 flex items-center justify-center border rounded-[2px] shrink-0"
+                  style={{ borderColor: `${color}55`, backgroundColor: `${color}12` }}>
+                  <Icon size={14} style={{ color }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-foreground truncate">{item.fileName}</div>
+                  <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
+                    {item.type} · {new Date(item.timestamp).toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                  </div>
+                </div>
+                <Badge label={item.status} />
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* About SONARIX Panel (PRD 4.5) */}
+      <div className="sonarix-panel p-5"
+        style={{ backgroundColor: "var(--sx-panel)", borderColor: "var(--sx-border)" }}>
+        <div className="flex items-start gap-4">
+          <div className="w-12 h-12 bg-primary/10 border border-primary/30 flex items-center justify-center shrink-0">
+            <Activity size={20} className="text-primary" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-mono text-sm font-bold text-foreground uppercase tracking-widest mb-2">About SONARIX</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+              SONARIX is an AI-powered platform for automated detection of marine debris and unknown anomalies in side-scan sonar imagery. It helps survey operators, environmental teams, and AUV mission planners reduce manual review time and prioritize cleanup operations.
+            </p>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-muted-foreground">
+              <li className="flex items-center gap-2"><CheckCircle2 size={13} className="text-primary shrink-0" /> Automated debris detection</li>
+              <li className="flex items-center gap-2"><CheckCircle2 size={13} className="text-primary shrink-0" /> Unknown anomaly flagging</li>
+              <li className="flex items-center gap-2"><CheckCircle2 size={13} className="text-primary shrink-0" /> Geotagged report generation</li>
+              <li className="flex items-center gap-2"><CheckCircle2 size={13} className="text-primary shrink-0" /> Confidence scoring</li>
+            </ul>
+            <a href="#" onClick={(e) => e.preventDefault()}
+              className="inline-flex items-center gap-1 mt-3 text-xs font-mono text-primary hover:text-primary/70 transition-colors">
+              View documentation →
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -1818,6 +1936,11 @@ export default function App() {
     window.scrollTo(0, 0);
   };
 
+  const signOut = () => {
+    localStorage.removeItem('isLoggedIn');
+    window.location.href = '/sonarix-login.html';
+  };
+
   const updateJob = (updated: Job) =>
     setJobs(prev => prev.map(j => j.id === updated.id ? updated : j));
 
@@ -1919,9 +2042,9 @@ export default function App() {
         }
       `}</style>
       <Toaster theme="dark" position="top-right" toastOptions={{ style: { fontFamily: "JetBrains Mono, monospace", fontSize: "12px" } }} />
-      <Navbar page={page} onMenuToggle={() => setSidebarOpen(o => !o)} />
+      <Navbar page={page} onMenuToggle={() => setSidebarOpen(o => !o)} onSignOut={signOut} />
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar currentPage={page} onNavigate={navigate} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <Sidebar currentPage={page} onNavigate={navigate} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} onSignOut={signOut} />
         <main className="flex-1 overflow-y-auto">
           {page === "dashboard" && <DashboardPage jobs={jobs} onNavigate={navigate} />}
           {page === "upload" && <UploadPage onNavigate={navigate} onJobCreated={j => setJobs(prev => [j, ...prev])} />}
