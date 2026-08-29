@@ -1,430 +1,368 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SONARIX — Secure Oceanic Uplink</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --sx-abyss: #040e18;
-            --sx-deep: #081a2b;
-            --sx-panel: rgba(8, 28, 45, 0.88);
-            --sx-teal: #2dd4bf;
-            --sx-teal-dim: #1d9e88;
-            --sx-cyan: #67e8f9;
-            --sx-amber: #f0b429;
-            --sx-text: #e7f2f4;
-            --sx-muted: #86a6b8;
-            --sx-border: rgba(45, 212, 191, 0.22);
-            --sx-border-strong: rgba(45, 212, 191, 0.45);
-        }
 
-        * { box-sizing: border-box; }
-        body, html {
-            margin: 0; padding: 0; height: 100vh;
-            background-color: var(--sx-abyss);
-            color: var(--sx-text);
-            font-family: 'Inter', sans-serif;
-            overflow: hidden;
+<html class="dark" lang="en" style=""><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SONARIX - Mission Control Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-container": "#1e2024",
+                        "surface-tint": "#00daf3",
+                        "on-tertiary-fixed": "#002204",
+                        "primary": "#c3f5ff",
+                        "inverse-primary": "#006875",
+                        "on-primary-container": "#00626e",
+                        "tertiary-fixed-dim": "#78dc77",
+                        "on-tertiary-fixed-variant": "#005313",
+                        "surface-container-highest": "#333539",
+                        "on-background": "#e2e2e8",
+                        "surface": "#111318",
+                        "secondary-fixed-dim": "#44ddc1",
+                        "tertiary-fixed": "#94f990",
+                        "surface-dim": "#111318",
+                        "on-secondary-fixed": "#00201a",
+                        "surface-container-low": "#1a1c20",
+                        "on-error": "#690005",
+                        "error": "#ffb4ab",
+                        "secondary-container": "#00bea4",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-lowest": "#0c0e12",
+                        "on-tertiary-container": "#00681a",
+                        "on-primary": "#00363d",
+                        "surface-variant": "#333539",
+                        "inverse-on-surface": "#2f3035",
+                        "on-secondary": "#00382f",
+                        "inverse-surface": "#e2e2e8",
+                        "primary-container": "#00e5ff",
+                        "primary-fixed": "#9cf0ff",
+                        "on-primary-fixed": "#001f24",
+                        "surface-bright": "#37393e",
+                        "outline-variant": "#3b494c",
+                        "background": "#111318",
+                        "on-primary-fixed-variant": "#004f58",
+                        "secondary": "#44ddc1",
+                        "on-tertiary": "#00390a",
+                        "on-surface-variant": "#bac9cc",
+                        "primary-fixed-dim": "#00daf3",
+                        "error-container": "#93000a",
+                        "tertiary-container": "#82e780",
+                        "on-secondary-container": "#00463b",
+                        "tertiary": "#b6ffae",
+                        "on-secondary-fixed-variant": "#005145",
+                        "surface-container-high": "#282a2e",
+                        "secondary-fixed": "#68fadd",
+                        "outline": "#849396",
+                        "on-surface": "#e2e2e8"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    spacing: {
+                        "xs": "4px",
+                        "md": "16px",
+                        "margin-mobile": "16px",
+                        "gutter": "16px",
+                        "margin-desktop": "32px",
+                        "base": "4px",
+                        "sm": "8px",
+                        "xl": "32px",
+                        "lg": "24px"
+                    },
+                    fontFamily: {
+                        "headline-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-tech": ["JetBrains Mono"],
+                        "label-code": ["JetBrains Mono"],
+                        "body-md": ["Inter"]
+                    },
+                    fontSize: {
+                        "headline-md": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+                        "headline-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }],
+                        "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+                        "display-lg": ["48px", { lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "label-tech": ["12px", { lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "500" }],
+                        "label-code": ["11px", { lineHeight: "14px", fontWeight: "400" }],
+                        "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }]
+                    }
+                }
+            }
+        };
+    </script>
+<style>
+        .grid-bg {
+            background-image:
+                linear-gradient(to right, rgba(30, 41, 59, 0.5) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(30, 41, 59, 0.5) 1px, transparent 1px);
+            background-size: 24px 24px;
         }
-
-        /* Balanced Radar Background */
-        .radar-bg {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
+        .glow-effect:focus-within {
+            box-shadow: 0 0 12px 0 rgba(0, 229, 255, 0.2);
+            border-color: #00E5FF;
+        }
+       
+        /* Loading Animation Styles */
+        .loading-overlay {
+            display: none;
+            backdrop-filter: blur(4px);
+        }
+        .loading-overlay.active {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;
-            opacity: 0.55; 
+        }
+        .pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
         }
 
-        .radar-container {
-            position: relative;
-            width: 90vw;
-            height: 90vh;
-            max-width: 900px;
-            max-height: 900px;
+        /* Fade in up animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+       
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
         }
 
-        .radar-container svg {
-            width: 100%;
-            height: 100%;
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+        .stagger-4 { animation-delay: 0.4s; }
+
+        /* Breathing pulse */
+        @keyframes breathing {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+        .breathing-dot {
+            animation: breathing 2s ease-in-out infinite;
         }
 
-        .sweep-beam {
-            transform-origin: 450px 450px;
-            animation: rotateSweep 8s linear infinite;
+        /* Shake animation for failed login */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+            20%, 40%, 60%, 80% { transform: translateX(4px); }
+        }
+        .animate-shake {
+            animation: shake 0.5s ease-in-out;
         }
 
-        @keyframes rotateSweep {
-            to { transform: rotate(360deg); }
+        @media (prefers-reduced-motion: reduce) {
+            .animate-fade-in-up {
+                animation: none;
+                opacity: 1;
+                transform: none;
+            }
+            .stagger-1, .stagger-2, .stagger-3, .stagger-4 {
+                animation-delay: 0s;
+            }
+            .breathing-dot {
+                animation: none;
+            }
         }
-
-        .blip {
-            animation: blipGlow 3s ease-in-out infinite;
-        }
-
-        @keyframes blipGlow {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 0.9; transform: scale(1.3); }
-        }
-
-        /* Clean Ambient Grid & HUD */
-        .grid-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 1;
-            pointer-events: none;
-            background-image: 
-                linear-gradient(to right, rgba(103,232,249,0.035) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(103,232,249,0.035) 1px, transparent 1px);
-            background-size: 50px 50px;
-        }
-
-        .hud-corner {
-            position: fixed;
-            z-index: 2;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 10px;
-            color: rgba(45, 212, 191, 0.5);
-            letter-spacing: 1.5px;
-            pointer-events: none;
-            text-transform: uppercase;
-        }
-        /* Fixed positioning to avoid overlap */
-        .hud-tl { top: 20px; left: 24px; }
-        .hud-tr { top: 20px; right: 24px; text-align: right; }
-
-        /* Layout Container */
-        .login-wrapper {
-            position: relative;
-            z-index: 10;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-        }
-
-        /* Main Login Console Box */
-        .console-box {
-            background: var(--sx-panel);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--sx-border-strong);
-            width: 100%;
-            max-width: 500px;
-            padding: 2.5rem;
-            position: relative;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), inset 0 0 25px rgba(45, 212, 191, 0.05);
-        }
-
-        /* Decorative Tech Corners */
-        .console-box::before, .console-box::after {
-            content: '';
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            border-color: var(--sx-teal);
-            border-style: solid;
-        }
-        .console-box::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
-        .console-box::after { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
-
-        .console-header {
-            text-align: center;
-            margin-bottom: 1.8rem;
-        }
-
-        .logo-mark {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 20px;
-            font-weight: 700;
-            letter-spacing: 3px;
-            color: var(--sx-text);
-            margin-bottom: 6px;
-        }
-
-        .logo-mark em {
-            font-style: normal;
-            color: var(--sx-teal);
-        }
-
-        .console-sub {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            color: var(--sx-muted);
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-        }
-
-        .system-status {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 10.5px;
-            color: var(--sx-teal-dim);
-            margin-top: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .status-dot {
-            width: 6px;
-            height: 6px;
-            background: var(--sx-teal);
-            border-radius: 50%;
-            box-shadow: 0 0 8px var(--sx-teal);
-            animation: pulseDot 2s infinite;
-        }
-
-        @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-        /* Form Elements */
-        .form-group {
-            margin-bottom: 1.2rem;
-        }
-
-        label {
-            display: block;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--sx-muted);
-            margin-bottom: 6px;
-        }
-
-        .input-field {
-            width: 100%;
-            background: rgba(4, 14, 24, 0.9);
-            border: 1px solid var(--sx-border);
-            padding: 13px 15px;
-            color: var(--sx-text);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 14px;
-            border-radius: 2px;
-            transition: all 0.3s ease;
-        }
-
-        .input-field:focus {
-            outline: none;
-            border-color: var(--sx-teal);
-            box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.15);
-        }
-
-        .form-options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 13px;
-            color: var(--sx-muted);
-            margin-bottom: 1.5rem;
-        }
-
-        .checkbox-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-        }
-
-        .checkbox-container input {
-            accent-color: var(--sx-teal);
-            width: 16px;
-            height: 16px;
-        }
-
-        .forgot-link {
-            color: var(--sx-teal);
-            text-decoration: none;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            letter-spacing: 0.5px;
-        }
-
-        .forgot-link:hover { text-decoration: underline; }
-
-        .btn-access {
-            width: 100%;
-            background: var(--sx-teal);
-            color: var(--sx-abyss);
-            border: none;
-            padding: 15px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            cursor: pointer;
-            border-radius: 2px;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 20px rgba(45, 212, 191, 0.3);
-        }
-
-        .btn-access:hover {
-            background: #4df0d4;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(45, 212, 191, 0.5);
-        }
-
-        .terminal-ticker {
-            background: rgba(2, 8, 15, 0.85);
-            border: 1px solid rgba(45, 212, 191, 0.2);
-            padding: 8px 12px;
-            margin-top: 1.2rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 10px;
-            color: var(--sx-teal-dim);
-            height: 34px;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-        }
-
-        .console-footer {
-            margin-top: 1.2rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--sx-border);
-            text-align: center;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            color: var(--sx-muted);
-        }
-
-        .console-footer a { color: var(--sx-teal); text-decoration: none; }
-        .console-footer a:hover { text-decoration: underline; }
-
-        /* Moved down and spaced out from the coordinates */
-        .back-home {
-            position: absolute;
-            top: 52px;
-            left: 24px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            color: var(--sx-muted);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            letter-spacing: 1px;
-            transition: color 0.2s;
-            z-index: 10;
-        }
-        .back-home:hover { color: var(--sx-teal); }
     </style>
 </head>
-<body>
+<body class="bg-background text-on-background h-screen w-screen overflow-hidden font-body-md antialiased">
+<!-- Background Video Setup -->
+<div class="fixed inset-0 z-[-3] lg:hidden" aria-hidden="true">
+<video autoplay loop muted playsinline preload="auto" class="w-full h-full object-cover" poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 1080'%3E%3Crect fill='%230A0C10' width='1920' height='1080'/%3E%3C/svg%3E">
+<source src="login_bg.mp4?v=2" type="video/mp4">
+</video>
+</div>
+<div class="fixed inset-0 z-[-2] lg:hidden bg-gradient-to-b from-[#0A0C10]/95 via-[#0A0C10]/80 to-[#0A0C10]/60" aria-hidden="true"></div>
+<div class="fixed inset-0 z-[-1] lg:hidden grid-bg opacity-30" aria-hidden="true"></div>
 
-    <!-- Ambient Grid & HUD -->
-    <div class="grid-overlay"></div>
-    <div class="hud-corner hud-tl">LAT: 28.6139° N &nbsp;|&nbsp; LON: 77.2090° E</div>
-    <div class="hud-corner hud-tr">SYS_SECURE: ACTIVE<br>ENCRYPTION: AES-256</div>
+<div class="flex h-full w-full flex-col lg:flex-row">
+<!-- Left Side: Branding & Visuals (60%) -->
+<div class="relative hidden lg:flex w-[60%] flex-col justify-between p-margin-desktop bg-surface-container-lowest overflow-hidden">
+<!-- Background Video (Desktop) -->
+<div class="absolute inset-0 z-0 lg:block" aria-hidden="true">
+<video autoplay loop muted playsinline preload="auto" class="w-full h-full object-cover" poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 1080'%3E%3Crect fill='%230A0C10' width='1920' height='1080'/%3E%3C/svg%3E">
+<source src="login_bg.mp4?v=2" type="video/mp4">
+</video>
+</div>
+<div class="absolute inset-0 z-1 lg:block bg-gradient-to-r from-[#0A0C10]/90 via-[#0A0C10]/60 to-[#11141A]/80" aria-hidden="true"></div>
+<div class="absolute inset-0 z-2 lg:block grid-bg opacity-30" aria-hidden="true"></div>
+<!-- Background Shader -->
 
-    <!-- Balanced Animated Radar Background -->
-    <div class="radar-bg">
-        <div class="radar-container">
-            <svg viewBox="0 0 900 900">
-                <circle cx="450" cy="450" r="150" fill="none" stroke="#2dd4bf" stroke-width="1" opacity="0.4"/>
-                <circle cx="450" cy="450" r="300" fill="none" stroke="#2dd4bf" stroke-width="1" opacity="0.3"/>
-                <circle cx="450" cy="450" r="420" fill="none" stroke="#2dd4bf" stroke-width="1" opacity="0.2"/>
-                <line x1="450" y1="30" x2="450" y2="870" stroke="#2dd4bf" stroke-width="0.9" opacity="0.3"/>
-                <line x1="30" y1="450" x2="870" y2="450" stroke="#2dd4bf" stroke-width="0.9" opacity="0.3"/>
-                
-                <!-- Rotating Radar Beam -->
-                <g class="sweep-beam">
-                    <defs>
-                        <linearGradient id="loginSweep" x1="450" y1="450" x2="900" y2="450" gradientUnits="userSpaceOnUse">
-                            <stop offset="0%" stop-color="#2dd4bf" stop-opacity="0.5"/>
-                            <stop offset="100%" stop-color="#2dd4bf" stop-opacity="0"/>
-                        </linearGradient>
-                        <clipPath id="loginClip"><circle cx="450" cy="450" r="420"/></clipPath>
-                    </defs>
-                    <g clip-path="url(#loginClip)">
-                        <path d="M450,450 L450,30 A420,420 0 0,1 746,154 Z" fill="url(#loginSweep)"/>
-                    </g>
-                    <line x1="450" y1="450" x2="746" y2="154" stroke="#67e8f9" stroke-width="1.8" opacity="0.85"/>
-                </g>
+<!-- Top Content -->
+<div class="relative z-20 flex flex-col gap-sm">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-surface-tint text-3xl pulse" style="font-variation-settings: 'FILL' 1;">radar</span>
+<h1 class="font-display-lg text-display-lg text-surface-tint tracking-tighter uppercase">SONARIX</h1>
+</div>
+<p class="font-label-tech text-label-tech text-secondary uppercase tracking-widest">AI SONAR INTELLIGENCE PLATFORM</p>
+</div>
+<!-- Middle Content -->
+<div class="relative z-20 max-w-2xl">
+<h2 class="font-display-lg text-display-lg mb-md text-on-surface">Detect. Analyze. Protect.</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xl">
+                    AI-assisted side-scan sonar analysis for intelligent marine debris detection and autonomous underwater survey missions.
+                </p>
+</div>
+<!-- Bottom Content -->
+<div class="relative z-20 flex flex-col gap-lg">
+<div class="flex items-center gap-md">
+<div class="flex items-center gap-xs text-tertiary-fixed-dim font-label-code text-label-code bg-tertiary-fixed-dim/10 px-sm py-[2px] rounded border border-tertiary-fixed-dim">
+<div class="w-2 h-2 rounded-full bg-tertiary-fixed-dim breathing-dot"></div>
+                        SONARIX SYSTEMS ONLINE
+                    </div>
+</div>
+<div class="flex gap-md font-label-tech text-label-tech text-on-surface-variant uppercase opacity-70">
+<span class="">AI Detection Engine</span>
+<span class="">•</span>
+<span class="">Side-Scan Sonar</span>
+<span class="">•</span>
+<span class="">AUV Mission Intelligence</span>
+</div>
+</div>
+</div>
+<!-- Right Side: Login Panel (40%) -->
+<div class="w-full lg:w-[40%] h-full bg-surface border-l border-outline-variant flex flex-col grid-bg relative">
+<!-- Mobile Header (Hidden on Desktop) -->
+<div class="lg:hidden flex items-center justify-center p-lg border-b border-outline-variant bg-surface-container-lowest animate-fade-in-up">
+<span class="material-symbols-outlined text-surface-tint mr-sm pulse">radar</span>
+<span class="font-headline-md text-headline-md text-surface-tint tracking-tighter uppercase">SONARIX</span>
+</div>
+<!-- Login Form Container -->
+<div class="flex-1 flex flex-col justify-center px-margin-mobile lg:px-xl max-w-md mx-auto w-full relative z-10">
+<div class="mb-xl animate-fade-in-up stagger-1">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-xs uppercase">WELCOME TO SONARIX</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Sign in to access Mission Control</p>
+</div>
+<form class="flex flex-col gap-lg" id="loginForm">
+<!-- Email / Operator ID -->
+<div class="flex flex-col gap-xs animate-fade-in-up stagger-2">
+<label class="font-label-tech text-label-tech text-on-surface-variant uppercase" for="email">Email / Operator ID</label>
+<div class="relative glow-effect rounded transition-all duration-300">
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded px-md py-sm text-on-surface font-body-sm focus:outline-none focus:border-surface-tint focus:ring-1 focus:ring-surface-tint/50 placeholder-on-surface-variant/50 transition-all duration-300" id="email" placeholder="Enter your email or operator ID" type="text"/>
+</div>
+</div>
+<!-- Password -->
+<div class="flex flex-col gap-xs animate-fade-in-up stagger-3">
+<label class="font-label-tech text-label-tech text-on-surface-variant uppercase" for="password">Password</label>
+<div class="relative glow-effect rounded transition-all duration-300 flex items-center bg-surface-container-lowest border border-outline-variant overflow-hidden focus-within:border-surface-tint focus-within:ring-1 focus-within:ring-surface-tint/50">
+<input class="w-full bg-transparent border-none px-md py-sm text-on-surface font-body-sm focus:outline-none focus:ring-0 placeholder-on-surface-variant/50 transition-colors" id="password" placeholder="Enter your password" type="password"/>
+<button class="px-sm text-on-surface-variant hover:text-surface-tint transition-colors focus:outline-none" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+</div>
+<!-- Remember & Forgot -->
+<div class="flex justify-between items-center mt-xs animate-fade-in-up stagger-3">
+<label class="flex items-center gap-sm cursor-pointer group">
+<div class="relative flex items-center justify-center w-4 h-4 border border-outline-variant rounded bg-surface-container-lowest group-hover:border-surface-tint transition-colors">
+<input class="opacity-0 absolute w-full h-full cursor-pointer peer" type="checkbox"/>
+<span class="material-symbols-outlined text-[14px] text-surface-tint opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant group-hover:text-on-surface transition-colors">Remember me</span>
+</label>
+<a class="font-label-tech text-label-tech text-surface-tint hover:text-primary transition-colors" href="#">Forgot password?</a>
+</div>
+<!-- Submit Button -->
+<button class="mt-md w-full bg-surface-tint hover:bg-primary text-on-primary font-label-tech text-label-tech uppercase py-md rounded transition-all duration-300 hover:shadow-[0_0_15px_rgba(0,218,243,0.4)] flex justify-center items-center gap-sm animate-fade-in-up stagger-4 hover:-translate-y-0.5" type="submit">
+<span class="">SIGN IN TO MISSION CONTROL</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+<!-- Divider -->
+<!-- Secondary Auth -->
+</form>
+<!-- Footer Links -->
+<div class="mt-xl text-center animate-fade-in-up stagger-4">
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                        New to SONARIX? <a class="text-surface-tint hover:text-primary font-label-tech text-label-tech transition-colors ml-sm border-b border-surface-tint/30 hover:border-surface-tint" href="#">REQUEST ACCESS / CREATE ACCOUNT</a>
+</p>
+</div>
+</div>
+<!-- Bottom Security Message -->
+<div class="mt-auto p-md border-t border-outline-variant bg-surface-container-lowest/80 flex items-center justify-center gap-sm z-10">
+<span class="material-symbols-outlined text-[16px] text-surface-tint">lock</span>
+<p class="font-label-code text-label-code text-on-surface-variant text-center max-w-xs">
+                    Secure Operator Authentication. Authorized access to SONARIX mission data and sonar intelligence.
+                </p>
+</div>
+<!-- Loading State Overlay -->
+<div class="loading-overlay absolute inset-0 z-50 bg-background/90 flex-col items-center justify-center p-xl" id="loadingOverlay">
+<div class="relative w-24 h-24 mb-lg">
+<div class="absolute inset-0 rounded-full border-2 border-outline-variant"></div>
+<div class="absolute inset-0 rounded-full border-t-2 border-surface-tint animate-spin"></div>
+<span class="material-symbols-outlined absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-surface-tint text-3xl pulse">radar</span>
+</div>
+<h3 class="font-label-tech text-label-tech text-surface-tint tracking-widest uppercase mb-sm" id="loadingText">AUTHENTICATING...</h3>
+<div class="w-64 h-1 bg-surface-container-highest rounded overflow-hidden">
+<div class="h-full bg-surface-tint w-1/2 animate-[pulse_1s_ease-in-out_infinite]"></div>
+</div>
+</div>
+</div>
+</div>
+<script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const overlay = document.getElementById('loadingOverlay');
+            const text = document.getElementById('loadingText');
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
 
-                <!-- Glowing Radar Blips -->
-                <circle class="blip" cx="620" cy="280" r="6" fill="#f0b429" style="animation-delay: 0.4s;" />
-                <circle class="blip" cx="280" cy="620" r="5" fill="#2dd4bf" style="animation-delay: 1.5s;" />
-                <circle class="blip" cx="580" cy="650" r="4" fill="#67e8f9" style="animation-delay: 2.2s;" />
-            </svg>
-        </div>
-    </div>
+            overlay.classList.add('active');
+            text.textContent = 'AUTHENTICATING...';
+            text.classList.add('text-surface-tint');
+            text.classList.remove('text-tertiary-fixed-dim');
 
-    <!-- Back to Home Button -->
-    <a href="sonarix-home.html" class="back-home">&larr; RETURN TO COMMAND</a>
+            setTimeout(() => {
+                if (email === 'admin' && password === '12345') {
+                    text.textContent = 'ACCESS GRANTED';
+                    text.classList.remove('text-surface-tint');
+                    text.classList.add('text-tertiary-fixed-dim');
 
-    <!-- Login Wrapper & Console Box -->
-    <div class="login-wrapper">
-        <div class="console-box">
-            <div class="console-header">
-                <div class="logo-mark">
-                    <svg viewBox="0 0 24 24" fill="none" style="width:24px;height:24px;"><circle cx="12" cy="12" r="10.5" stroke="#2dd4bf" stroke-width="1.2" opacity="0.5"/><circle cx="12" cy="12" r="6.5" stroke="#2dd4bf" stroke-width="1.2" opacity="0.75"/><circle cx="12" cy="12" r="1.8" fill="#67e8f9"/><line x1="12" y1="12" x2="12" y2="2" stroke="#67e8f9" stroke-width="1.2"/></svg>
-                    SONAR<em>IX</em>
-                </div>
-                <div class="console-sub">Secure Oceanic Uplink Terminal</div>
-                <div class="system-status">
-                    <span class="status-dot"></span> Array Online — Awaiting Operator Credentials
-                </div>
-            </div>
+                    // Set authentication session
+                    sessionStorage.setItem('sonarix_auth', 'true');
+                    sessionStorage.setItem('sonarix_user', 'admin');
 
-            <form>
-                <div class="form-group">
-                    <label for="email">Operator Email / Fleet ID</label>
-                    <input type="email" id="email" class="input-field" placeholder="operator@fleet.org" required>
-                </div>
+                    // Redirect to dashboard
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1000);
+                } else {
+                    text.textContent = 'ACCESS DENIED';
+                    text.classList.remove('text-surface-tint');
+                    text.classList.add('text-error');
 
-                <div class="form-group">
-                    <label for="password">Security Access Key</label>
-                    <input type="password" id="password" class="input-field" placeholder="••••••••••••" required>
-                </div>
+                    // Shake animation on form
+                    const form = document.getElementById('loginForm');
+                    form.classList.add('animate-shake');
 
-                <div class="form-options">
-                    <label class="checkbox-container">
-                        <input type="checkbox"> Remember session
-                    </label>
-                    <a href="#" class="forgot-link">Recover key?</a>
-                </div>
-
-                <button type="submit" class="btn-access">ACCESS CONSOLE &rarr;</button>
-            </form>
-
-            <div class="terminal-ticker" id="terminalLog">
-                <span>> [SYS]: Establishing secure proxy to sub-surface node... OK</span>
-            </div>
-
-            <div class="console-footer">
-                Cleared for a new fleet? <a href="#">Request access</a>
-                <div class="version-tag">SONARIX V2.4 — SIH 2026 BUILD</div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const logs = [
-            "> [SYS]: Establishing secure proxy to sub-surface node... OK",
-            "> [RADAR]: Frequency tracking locked at 120kHz SSS.",
-            "> [AI]: Anomaly detection models loaded in memory.",
-            "> [SECURITY]: Handshake valid. Awaiting operator login."
-        ];
-        let logIndex = 0;
-        setInterval(() => {
-            logIndex = (logIndex + 1) % logs.length;
-            document.getElementById('terminalLog').innerHTML = `<span>${logs[logIndex]}</span>`;
-        }, 4000);
+                    setTimeout(() => {
+                        overlay.classList.remove('active');
+                        text.textContent = 'AUTHENTICATING...';
+                        text.classList.add('text-surface-tint');
+                        text.classList.remove('text-error');
+                        form.classList.remove('animate-shake');
+                    }, 2000);
+                }
+            }, 1500);
+        });
     </script>
-</body>
-</html>
+</body></html>

@@ -1,33 +1,579 @@
-
-  <!DOCTYPE html>
-  <html lang="en">
-    <head>
-      
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Ocean Debris &amp; Cleanup Tracking Dashboard</title>
-      <meta name="description" content="Tracks large plastic waste near state shorelines in real time, providing an interactive dashboard for public awareness and environmental action." />
-      <meta name="robots" content="noindex, nofollow" />
-      <style>html, body { height: 100%; margin: 0; } #root { height: 100%; }</style>
-      
-    </head>
-
-    <body>
-      <script>
-        // Redirect logic: check if user wants dashboard or other app page
-        const urlParams = new URLSearchParams(window.location.search);
-        const pageParam = urlParams.get('page');
-        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-        
-        // If requesting a specific app page or already logged in, show the app
-        // Otherwise redirect to home page (which will link to login)
-        if (!pageParam && !isLoggedIn && window.location.pathname === '/') {
-          window.location.href = '/sonarix-home.html';
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>SONARIX AI - Mission Control Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "outline": "#849396",
+                        "tertiary-container": "#ffc948",
+                        "surface-container-highest": "#30353d",
+                        "on-surface-variant": "#bac9cc",
+                        "error": "#ffb4ab",
+                        "on-tertiary-container": "#725400",
+                        "tertiary-fixed-dim": "#fabd00",
+                        "inverse-on-surface": "#2c3138",
+                        "tertiary-fixed": "#ffdf9e",
+                        "primary-container": "#00e5ff",
+                        "background": "#0f141b",
+                        "primary": "#c3f5ff",
+                        "surface-variant": "#30353d",
+                        "on-tertiary-fixed": "#261a00",
+                        "surface-dim": "#0f141b",
+                        "inverse-surface": "#dee2ec",
+                        "on-primary-fixed-variant": "#004f58",
+                        "secondary-fixed": "#94f990",
+                        "on-secondary-fixed": "#002204",
+                        "on-background": "#dee2ec",
+                        "surface-container": "#1b2027",
+                        "secondary": "#78dc77",
+                        "surface-tint": "#00daf3",
+                        "on-tertiary-fixed-variant": "#5b4300",
+                        "surface": "#0f141b",
+                        "on-primary-container": "#00626e",
+                        "error-container": "#93000a",
+                        "surface-container-low": "#171c23",
+                        "on-error": "#690005",
+                        "on-surface": "#dee2ec",
+                        "surface-container-high": "#252a32",
+                        "surface-bright": "#343941",
+                        "on-primary-fixed": "#001f24",
+                        "on-primary": "#00363d",
+                        "inverse-primary": "#006875",
+                        "outline-variant": "#3b494c",
+                        "surface-container-lowest": "#090f15",
+                        "on-error-container": "#ffdad6",
+                        "primary-fixed-dim": "#00daf3",
+                        "on-secondary-container": "#95fb92",
+                        "secondary-fixed-dim": "#78dc77",
+                        "on-secondary": "#00390a",
+                        "on-secondary-fixed-variant": "#005313",
+                        "tertiary": "#ffebc6",
+                        "on-tertiary": "#3f2e00",
+                        "secondary-container": "#00761f",
+                        "primary-fixed": "#9cf0ff"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    spacing: {
+                        "container-padding": "12px",
+                        "module-gap": "1px",
+                        "section-margin": "16px",
+                        "grid-gutter": "8px",
+                        "element-stack": "4px"
+                    },
+                    fontFamily: {
+                        "panel-title": ["Inter", "sans-serif"],
+                        "display-header": ["Inter", "sans-serif"],
+                        "status-sm": ["JetBrains Mono", "monospace"],
+                        "label-caps": ["Inter", "sans-serif"],
+                        "data-mono": ["JetBrains Mono", "monospace"],
+                        "body-standard": ["Inter", "sans-serif"]
+                    },
+                    fontSize: {
+                        "panel-title": ["14px", { lineHeight: "20px", letterSpacing: "0.05em", fontWeight: "600" }],
+                        "display-header": ["24px", { lineHeight: "32px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "status-sm": ["10px", { lineHeight: "12px", fontWeight: "700" }],
+                        "label-caps": ["11px", { lineHeight: "14px", letterSpacing: "0.08em", fontWeight: "700" }],
+                        "data-mono": ["12px", { lineHeight: "16px", fontWeight: "500" }],
+                        "body-standard": ["13px", { lineHeight: "18px", fontWeight: "400" }]
+                    }
+                }
+            }
         }
-      </script>
-      <div id="root"></div>
-      <script type="module" src="/src/main.tsx"></script>
-      
-    </body>
-  </html>
-  
+    </script>
+<style>
+        body {
+            background-color: #0B111D;
+            color: #dee2ec;
+        }
+        .pulse-green {
+            animation: pulse-green 2s infinite;
+        }
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(120, 220, 119, 0.7); }
+            70% { box-shadow: 0 0 0 4px rgba(120, 220, 119, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(120, 220, 119, 0); }
+        }
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background-color: rgba(0, 229, 255, 0.3);
+            position: absolute;
+            top: 0;
+            left: 0;
+            animation: scan 4s linear infinite;
+        }
+        @keyframes scan {
+            0% { top: 0; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+        /* Custom scrollbar for data density */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f141b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3b494c;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #849396;
+        }
+    </style>
+</head>
+<body class="font-body-standard text-body-standard h-screen w-screen overflow-hidden flex flex-col">
+<!-- Auth Guard -->
+<script>
+(function() {
+    if (!sessionStorage.getItem('sonarix_auth')) {
+        window.location.href = 'sonarix-login.html';
+    }
+})();
+</script>
+<!-- TopNavBar -->
+<nav class="bg-surface-container dark:bg-surface-container border-b border-outline-variant flex justify-between items-center h-12 px-container-padding w-full z-50 shrink-0">
+<div class="flex items-center gap-4">
+<span class="font-display-header text-display-header text-surface-tint tracking-tighter uppercase">SONARIX</span>
+<span class="text-on-surface-variant text-label-caps uppercase hidden md:inline">AI Sonar Intelligence Platform</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 bg-[#0B111D] border border-outline-variant px-3 py-1 rounded">
+<span class="text-status-sm text-on-surface-variant">MISSION:</span>
+<span class="text-data-mono text-primary">SXR-047</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant cursor-pointer">arrow_drop_down</span>
+</div>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim hover:text-primary-container transition-colors cursor-pointer active:scale-95" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim hover:text-primary-container transition-colors cursor-pointer active:scale-95" data-icon="settings">settings</span>
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim hover:text-primary-container transition-colors cursor-pointer active:scale-95" data-icon="help">help</span>
+</div>
+<img alt="Mission Commander Avatar" class="w-8 h-8 rounded-full border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuADydhMmBLG2Z9pASyTsMWYgEj1KtBBivBACHS_rwltBLS5OyR-5olkP_Ucs68ABtSopt0jw6NduYFY9cXkKnEXeI-nyqYVTpMB1FV24-4rdcB7dl8MZ1sFckPpi-zeW1I4pJkQdRGAnszEFPk3t57tB1vhmL6YjrkhpzHzrWb_KUBce2zpNoVUAkRn-ek2aRMhsVVSCrFLYxGSyAP_XMOWDkXAANTUQP2G5iQr-FDdwuG5j96SR3ty">
+<button id="logoutBtn" class="flex items-center gap-2 bg-error/10 border border-error/30 text-error px-3 py-1.5 rounded hover:bg-error/20 hover:border-error/50 transition-colors cursor-pointer" title="Logout">
+<span class="material-symbols-outlined text-[16px]">logout</span>
+<span class="font-label-caps text-label-caps hidden sm:inline">LOGOUT</span>
+</button>
+</div>
+</nav>
+<div class="flex flex-1 overflow-hidden relative">
+<!-- SideNavBar -->
+<aside class="bg-surface-container-low dark:bg-surface-container-low border-r border-outline-variant fixed left-0 top-12 bottom-0 flex flex-col z-40 docked h-full w-16 hover:w-64 transition-all duration-300 group overflow-hidden shrink-0">
+<div class="p-4 border-b border-outline-variant flex items-center gap-4 whitespace-nowrap overflow-hidden">
+<div class="w-8 h-8 rounded-full bg-secondary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-secondary text-[18px]">cell_tower</span>
+</div>
+<div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col">
+<span class="font-panel-title text-panel-title text-primary">MISSION OPS</span>
+<span class="text-status-sm text-secondary">AUV-04 ACTIVE</span>
+</div>
+</div>
+<div class="flex-1 py-4 flex flex-col gap-1 overflow-y-auto overflow-x-hidden">
+<div class="flex items-center gap-4 px-4 py-3 bg-primary-container text-on-primary-container border-l-2 border-primary cursor-pointer whitespace-nowrap" title="Dashboard">
+<span class="material-symbols-outlined shrink-0" data-icon="dashboard">dashboard</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity duration-300">DASHBOARD</span>
+</div>
+<div class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest hover:text-primary cursor-pointer whitespace-nowrap transition-colors" title="Sonar Viewer">
+<span class="material-symbols-outlined shrink-0" data-icon="waves">waves</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity duration-300">SONAR VIEWER</span>
+</div>
+<div class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest hover:text-primary cursor-pointer whitespace-nowrap transition-colors" title="AI Analytics">
+<span class="material-symbols-outlined shrink-0" data-icon="psychology">psychology</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity duration-300">AI ANALYTICS</span>
+</div>
+<div class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest hover:text-primary cursor-pointer whitespace-nowrap transition-colors" title="GIS Map">
+<span class="material-symbols-outlined shrink-0" data-icon="explore">explore</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity duration-300">GIS MAP</span>
+</div>
+<div class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest hover:text-primary cursor-pointer whitespace-nowrap transition-colors" title="Telemetry">
+<span class="material-symbols-outlined shrink-0" data-icon="insights">insights</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity duration-300">TELEMETRY</span>
+</div>
+<div class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest hover:text-primary cursor-pointer whitespace-nowrap transition-colors" title="Reports">
+<span class="material-symbols-outlined shrink-0" data-icon="description">description</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity duration-300">REPORTS</span>
+</div>
+</div>
+<div class="border-t border-outline-variant py-2 flex flex-col gap-1">
+<div class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest hover:text-primary cursor-pointer whitespace-nowrap transition-colors" title="Support">
+<span class="material-symbols-outlined shrink-0" data-icon="support_agent">support_agent</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity duration-300">SUPPORT</span>
+</div>
+<div class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest hover:text-primary cursor-pointer whitespace-nowrap transition-colors" title="System">
+<span class="material-symbols-outlined shrink-0" data-icon="terminal">terminal</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity duration-300">SYSTEM</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 ml-16 flex flex-col p-container-padding gap-module-gap overflow-y-auto bg-[#0B111D]">
+<!-- MISSION STATUS BAR -->
+<div class="bg-[#161B22] border border-[#30363D] flex flex-wrap items-center justify-between p-2 shrink-0">
+<div class="flex items-center gap-6 flex-wrap">
+<div class="flex items-center gap-2">
+<span class="text-status-sm text-on-surface-variant">AUV STATUS</span>
+<div class="w-2 h-2 rounded-full bg-secondary pulse-green"></div>
+<span class="text-data-mono text-secondary">ACTIVE</span>
+</div>
+<div class="w-px h-4 bg-[#30363D]"></div>
+<div class="flex items-center gap-2">
+<span class="text-status-sm text-on-surface-variant">SONAR</span>
+<span class="text-data-mono text-primary">ONLINE</span>
+</div>
+<div class="w-px h-4 bg-[#30363D]"></div>
+<div class="flex items-center gap-2">
+<span class="text-status-sm text-on-surface-variant">AI ENGINE</span>
+<span class="text-data-mono text-primary">RUNNING</span>
+</div>
+<div class="w-px h-4 bg-[#30363D]"></div>
+<div class="flex items-center gap-2">
+<span class="text-status-sm text-on-surface-variant">GPS</span>
+<span class="text-data-mono text-primary">LOCKED</span>
+</div>
+</div>
+<div class="flex items-center gap-6 flex-wrap mt-2 sm:mt-0">
+<div class="flex items-center gap-2">
+<span class="text-status-sm text-on-surface-variant">DEPTH</span>
+<span class="text-data-mono text-white">24.6m</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-status-sm text-on-surface-variant">SPEED</span>
+<span class="text-data-mono text-white">2.1 kts</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-status-sm text-on-surface-variant">SURVEY</span>
+<div class="w-24 h-2 bg-[#0B111D] border border-[#30363D] rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[68%]"></div>
+</div>
+<span class="text-data-mono text-primary">68%</span>
+</div>
+</div>
+</div>
+<!-- Main Grid Layout -->
+<div class="flex flex-col lg:flex-row gap-module-gap flex-1 min-h-0">
+<!-- Left Column (Sonar & Map) -->
+<div class="flex flex-col gap-module-gap lg:w-2/3 min-h-0">
+<!-- LIVE SONAR VIEWER -->
+<div class="bg-[#161B22] border border-[#30363D] flex flex-col flex-1 min-h-[300px] relative overflow-hidden">
+<div class="bg-[#1C2128] border-b border-[#30363D] p-2 flex justify-between items-center shrink-0 z-10">
+<h2 class="font-panel-title text-panel-title text-white uppercase flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">radar</span> LIVE SIDE-SCAN SONAR
+                            </h2>
+<div class="flex items-center gap-3">
+<span class="text-status-sm text-on-surface-variant">RNG: 30m</span>
+<span class="text-status-sm text-on-surface-variant">FRQ: 900kHz</span>
+<div class="flex items-center gap-1 bg-[#0B111D] px-2 py-0.5 rounded border border-secondary border-opacity-50">
+<div class="w-1.5 h-1.5 rounded-full bg-secondary pulse-green"></div>
+<span class="text-status-sm text-secondary">LIVE FEED</span>
+</div>
+</div>
+</div>
+<div class="relative flex-1 bg-black overflow-hidden group">
+<!-- Sonar Image Placeholder -->
+<img alt="Live side-scan sonar feed" class="absolute inset-0 w-full h-full object-cover opacity-80" data-alt="A dark, high-contrast, amber-tinted side-scan sonar image of a sandy seabed. A large, complex rectangular object with grid-like structures and tangled netting is clearly visible on the right side. The texture is gritty and realistic, typical of marine acoustics. Industrial, technical aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxZ2fugMm8zg62QH7WvtwRZ89KWngogwp5A2RL4XhzfIHIIQeKt0vHOKtJr0avEn61vapFccEEjhRzkgdAuuw1FOhcjW1fBMzeT1XIa_V6yJuIwMgyeXjJHhz4wNHx3FmWScgWVan7f6HpkwA1p5jKPB4tdolS3ldGPwna2hsu_iZfK1BHjlYMCvNSE7J29ao4ex_E7ZLKPf9ooppnQvePTA8jR4-OM8I_CfFo2ZybJMWi1mDHA7d0">
+<!-- Scanning effect -->
+<div class="scanline"></div>
+<!-- Target Bounding Boxes -->
+<div class="absolute top-[30%] left-[45%] w-32 h-24 border-2 border-error bg-error bg-opacity-10 z-10">
+<div class="absolute -top-6 left-0 bg-error text-on-error text-status-sm px-1 py-0.5 whitespace-nowrap">Ghost Net - 91%</div>
+<div class="absolute -bottom-1 -right-1 w-2 h-2 border-b-2 border-r-2 border-error"></div>
+<div class="absolute -top-1 -left-1 w-2 h-2 border-t-2 border-l-2 border-error"></div>
+</div>
+<div class="absolute top-[60%] left-[20%] w-16 h-16 border-2 border-tertiary-container bg-tertiary-container bg-opacity-10 z-10">
+<div class="absolute -top-6 left-0 bg-tertiary-container text-on-tertiary-container text-status-sm px-1 py-0.5 whitespace-nowrap">Unknown Object - 82%</div>
+</div>
+<!-- Technical Overlays -->
+<div class="absolute bottom-2 left-2 flex gap-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="bg-[#1C2128] border border-[#30363D] text-white p-1 hover:text-primary-container hover:border-primary-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">zoom_in</span>
+</button>
+<button class="bg-[#1C2128] border border-[#30363D] text-white p-1 hover:text-primary-container hover:border-primary-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">contrast</span>
+</button>
+</div>
+<!-- Grid lines -->
+<div class="absolute inset-0 pointer-events-none" style="background-image: linear-gradient(rgba(48, 54, 61, 0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(48, 54, 61, 0.3) 1px, transparent 1px); background-size: 50px 50px;"></div>
+</div>
+</div>
+<!-- Lower Split (Map & Summary) -->
+<div class="flex flex-col sm:flex-row gap-module-gap h-[250px] shrink-0">
+<!-- AUV MISSION MAP -->
+<div class="bg-[#161B22] border border-[#30363D] flex flex-col flex-1 relative overflow-hidden">
+<div class="bg-[#1C2128] border-b border-[#30363D] p-2 flex justify-between items-center z-10 shrink-0">
+<h2 class="font-panel-title text-panel-title text-white uppercase flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">map</span> AUV MISSION MAP
+                                </h2>
+<span class="text-status-sm text-data-mono text-primary">15.824, 73.691</span>
+</div>
+<div class="relative flex-1 bg-[#0a192f] overflow-hidden">
+<img alt="AUV Mission Map" class="absolute inset-0 w-full h-full object-cover opacity-70" data-alt="A dark mode bathymetric GIS map showing a survey path. The background features deep blue and teal topographic contours. A bright green jagged path line traces the AUV's route. Small orange dots mark detection points along the path. Highly technical, clean, industrial UI style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAruXu9mIlFtUbUT_HSJKFfCHWy7TibvX1cZyZCsbikOpJbNt_jifNMa_uXqNJpAzWEMUcRwf1relwBb_O5mtkWvyCCcuAnfj6J4gYYnOBhhS_SdyH9SyvW309iH5gJlCbaoPrD8QcZ6VtuZh9hL09kl7pMaqcpFn3UwLWmZZqtwr4hjuAHEHJ_F-Hiq6fIZ4_TYxKOFyKd2tVxyKiF3WD0PKdZJOJL2ly-i7PSZomJnvTH4yk3-7kP">
+<!-- AUV Marker -->
+<div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-primary-container rounded-sm shadow-[0_0_10px_rgba(0,229,255,0.8)] z-20 flex items-center justify-center">
+<span class="material-symbols-outlined text-black text-[12px]">navigation</span>
+</div>
+<div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 border border-primary-container rounded-full animate-ping opacity-30 pointer-events-none z-10"></div>
+<!-- Target Markers -->
+<div class="absolute top-[30%] left-[40%] flex flex-col items-center z-10">
+<div class="w-2 h-2 bg-error rounded-full"></div>
+<span class="text-status-sm text-error bg-[#0B111D] bg-opacity-80 px-1 mt-0.5">T-001</span>
+</div>
+<div class="absolute top-[70%] left-[60%] flex flex-col items-center z-10">
+<div class="w-2 h-2 bg-error rounded-full"></div>
+<span class="text-status-sm text-error bg-[#0B111D] bg-opacity-80 px-1 mt-0.5">T-002</span>
+</div>
+</div>
+</div>
+<!-- DETECTION SUMMARY -->
+<div class="bg-[#161B22] border border-[#30363D] w-full sm:w-1/3 flex flex-col">
+<div class="bg-[#1C2128] border-b border-[#30363D] p-2 shrink-0">
+<h2 class="font-panel-title text-panel-title text-white uppercase flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">donut_small</span> SUMMARY
+                                </h2>
+</div>
+<div class="flex-1 grid grid-cols-2 grid-rows-2 gap-module-gap p-module-gap bg-[#30363D]">
+<div class="bg-[#161B22] flex flex-col justify-center items-center p-2">
+<span class="text-display-header font-display-header text-white">27</span>
+<span class="text-status-sm text-on-surface-variant uppercase">Total Targets</span>
+</div>
+<div class="bg-[#161B22] flex flex-col justify-center items-center p-2">
+<span class="text-display-header font-display-header text-error">5</span>
+<span class="text-status-sm text-on-surface-variant uppercase">High Priority</span>
+</div>
+<div class="bg-[#161B22] flex flex-col justify-center items-center p-2">
+<span class="text-display-header font-display-header text-tertiary-container">8</span>
+<span class="text-status-sm text-on-surface-variant uppercase">Ghost Nets</span>
+</div>
+<div class="bg-[#161B22] flex flex-col justify-center items-center p-2">
+<span class="text-display-header font-display-header text-primary">68%</span>
+<span class="text-status-sm text-on-surface-variant uppercase">Coverage</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column (AI & Telemetry) -->
+<div class="flex flex-col gap-module-gap lg:w-1/3 min-h-0">
+<!-- AI ANALYSIS -->
+<div class="bg-[#161B22] border border-[#30363D] flex flex-col shrink-0">
+<div class="bg-[#1C2128] border-b border-[#30363D] p-2 flex justify-between items-center">
+<h2 class="font-panel-title text-panel-title text-white uppercase flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">smart_toy</span> AI ANALYSIS
+                            </h2>
+<span class="text-status-sm text-primary px-1.5 py-0.5 border border-primary rounded bg-primary bg-opacity-10">T-001 ACTIVE</span>
+</div>
+<div class="p-container-padding flex flex-col gap-4">
+<div class="flex items-center gap-4">
+<!-- Circular Gauge Mockup -->
+<div class="relative w-16 h-16 shrink-0 flex items-center justify-center rounded-full border-4 border-[#30363D] border-t-error border-r-error border-b-error transform -rotate-45">
+<div class="transform rotate-45 flex flex-col items-center">
+<span class="text-label-caps font-bold text-white leading-none">91%</span>
+</div>
+</div>
+<div>
+<h3 class="font-display-header text-[16px] text-error leading-tight uppercase">Possible Ghost Net</h3>
+<p class="text-status-sm text-on-surface-variant mt-1">AI Confidence Score</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 bg-[#0B111D] p-3 border border-[#30363D]">
+<div class="flex justify-between items-center border-b border-[#30363D] pb-1">
+<span class="text-status-sm text-on-surface-variant">CLASSIFICATION</span>
+<span class="text-data-mono text-white">Marine Debris</span>
+</div>
+<div class="flex justify-between items-center border-b border-[#30363D] pb-1">
+<span class="text-status-sm text-on-surface-variant">EST. SIZE</span>
+<span class="text-data-mono text-white">3.8 x 2.4m</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-status-sm text-on-surface-variant">RISK LEVEL</span>
+<span class="text-data-mono text-error bg-error bg-opacity-20 px-1">HIGH</span>
+</div>
+</div>
+<div class="flex gap-2 mt-2">
+<button class="flex-1 bg-primary-container text-[#0B111D] font-label-caps py-2 px-4 uppercase font-bold hover:bg-primary transition-colors focus:outline-none focus:ring-1 focus:ring-primary-container focus:ring-offset-1 focus:ring-offset-[#0B111D]">
+                                    VERIFY TARGET
+                                </button>
+<button class="flex-1 bg-transparent border border-[#30363D] text-primary-container font-label-caps py-2 px-4 uppercase hover:border-primary-container transition-colors focus:outline-none">
+                                    MARK FALSE POSITIVE
+                                </button>
+</div>
+</div>
+</div>
+<!-- PRIORITY TARGETS TABLE -->
+<div class="bg-[#161B22] border border-[#30363D] flex flex-col flex-1 min-h-[200px]">
+<div class="bg-[#1C2128] border-b border-[#30363D] p-2 flex justify-between items-center shrink-0">
+<h2 class="font-panel-title text-panel-title text-white uppercase flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">list_alt</span> PRIORITY TARGETS
+                            </h2>
+</div>
+<div class="flex-1 overflow-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-[#1C2128] sticky top-0 z-10 border-b border-[#30363D]">
+<tr>
+<th class="p-2 text-status-sm text-on-surface-variant uppercase font-normal">ID</th>
+<th class="p-2 text-status-sm text-on-surface-variant uppercase font-normal">Class</th>
+<th class="p-2 text-status-sm text-on-surface-variant uppercase font-normal">Conf</th>
+<th class="p-2 text-status-sm text-on-surface-variant uppercase font-normal">Risk</th>
+<th class="p-2 text-status-sm text-on-surface-variant uppercase font-normal">Status</th>
+</tr>
+</thead>
+<tbody class="text-data-mono text-[11px]">
+<tr class="border-b border-[#30363D] bg-surface-container-high bg-opacity-50 hover:bg-[#1C2128] cursor-pointer transition-colors">
+<td class="p-2 text-error">T-001</td>
+<td class="p-2 text-white">Ghost Net</td>
+<td class="p-2 text-primary">91%</td>
+<td class="p-2"><span class="bg-error bg-opacity-20 text-error px-1 py-0.5">HIGH</span></td>
+<td class="p-2 text-on-surface-variant">Unverified</td>
+</tr>
+<tr class="border-b border-[#30363D] hover:bg-[#1C2128] cursor-pointer transition-colors">
+<td class="p-2 text-tertiary-container">T-002</td>
+<td class="p-2 text-white">Fishing Gear</td>
+<td class="p-2 text-primary">87%</td>
+<td class="p-2"><span class="bg-error bg-opacity-20 text-error px-1 py-0.5">HIGH</span></td>
+<td class="p-2 text-secondary">Verified</td>
+</tr>
+<tr class="border-b border-[#30363D] hover:bg-[#1C2128] cursor-pointer transition-colors">
+<td class="p-2 text-tertiary-container">T-003</td>
+<td class="p-2 text-white">Unknown Obj</td>
+<td class="p-2 text-on-surface-variant">64%</td>
+<td class="p-2"><span class="bg-tertiary-container bg-opacity-20 text-tertiary-container px-1 py-0.5">MED</span></td>
+<td class="p-2 text-on-surface-variant">Unverified</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- SONAR TELEMETRY & EXPORT -->
+<div class="bg-[#161B22] border border-[#30363D] flex flex-col shrink-0">
+<div class="bg-[#1C2128] border-b border-[#30363D] p-2 flex justify-between items-center">
+<h2 class="font-panel-title text-panel-title text-white uppercase flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">monitoring</span> TELEMETRY
+                            </h2>
+</div>
+<div class="p-2 flex flex-col gap-3">
+<!-- Faux Line Chart -->
+<div>
+<span class="text-status-sm text-on-surface-variant uppercase mb-1 block">Return Intensity</span>
+<div class="h-12 w-full bg-[#0B111D] border border-[#30363D] relative overflow-hidden flex items-end px-1 gap-0.5 pb-1">
+<!-- Generating random bars for telemetry look -->
+<div class="w-2 bg-primary-container h-[40%] opacity-70"></div>
+<div class="w-2 bg-primary-container h-[60%] opacity-70"></div>
+<div class="w-2 bg-primary-container h-[30%] opacity-70"></div>
+<div class="w-2 bg-primary-container h-[80%] opacity-70"></div>
+<div class="w-2 bg-error h-[95%]"></div> <!-- Spike -->
+<div class="w-2 bg-primary-container h-[50%] opacity-70"></div>
+<div class="w-2 bg-primary-container h-[45%] opacity-70"></div>
+<div class="w-2 bg-primary-container h-[20%] opacity-70"></div>
+<div class="w-2 bg-primary-container h-[35%] opacity-70"></div>
+<div class="w-2 bg-primary-container h-[65%] opacity-70"></div>
+<div class="w-2 bg-primary-container h-[55%] opacity-70"></div>
+<div class="w-2 bg-primary-container h-[75%] opacity-70"></div>
+<div class="w-2 bg-primary-container h-[40%] opacity-70"></div>
+<div class="w-2 bg-primary-container h-[30%] opacity-70"></div>
+<div class="w-2 bg-primary-container h-[85%] opacity-70"></div>
+<div class="w-2 bg-primary-container h-[60%] opacity-70"></div>
+<div class="absolute inset-0 pointer-events-none" style="background-image: linear-gradient(rgba(48, 54, 61, 0.5) 1px, transparent 1px); background-size: 100% 4px;"></div>
+</div>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-status-sm text-on-surface-variant">AUV LINK</span>
+<span class="text-data-mono text-secondary">ONLINE</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-status-sm text-on-surface-variant">BATTERY</span>
+<span class="text-data-mono text-white flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-secondary">battery_5_bar</span> 76%
+                                </span>
+</div>
+<div class="border-t border-[#30363D] pt-2 mt-1 flex gap-2">
+<button class="flex-1 bg-[#1C2128] border border-[#30363D] text-on-surface-variant text-status-sm py-1 hover:text-white hover:border-outline-variant transition-colors flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[14px]">picture_as_pdf</span> PDF
+                                </button>
+<button class="flex-1 bg-[#1C2128] border border-[#30363D] text-on-surface-variant text-status-sm py-1 hover:text-white hover:border-outline-variant transition-colors flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[14px]">csv</span> CSV
+                                </button>
+<button class="flex-1 bg-[#1C2128] border border-[#30363D] text-on-surface-variant text-status-sm py-1 hover:text-white hover:border-outline-variant transition-colors flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[14px]">public</span> GEO
+                                </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+<script>
+    // Logout handler
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+        sessionStorage.removeItem('sonarix_auth');
+        sessionStorage.removeItem('sonarix_user');
+        window.location.href = 'sonarix-home.html';
+    });
+
+    // SideNav click handlers
+    document.querySelectorAll('aside .flex.items-center.gap-4').forEach(item => {
+        item.addEventListener('click', function() {
+            // Remove active state from all
+            document.querySelectorAll('aside .flex.items-center.gap-4').forEach(i => {
+                i.classList.remove('bg-primary-container', 'text-on-primary-container', 'border-l-2', 'border-primary');
+                i.classList.add('text-on-surface-variant', 'hover:bg-surface-container-highest', 'hover:text-primary');
+            });
+            // Add active state to clicked
+            this.classList.add('bg-primary-container', 'text-on-primary-container', 'border-l-2', 'border-primary');
+            this.classList.remove('text-on-surface-variant', 'hover:bg-surface-container-highest', 'hover:text-primary');
+        });
+    });
+
+    // Table row click handler
+    document.querySelectorAll('tbody tr').forEach(row => {
+        row.addEventListener('click', function() {
+            document.querySelectorAll('tbody tr').forEach(r => r.classList.remove('bg-primary-container/20'));
+            this.classList.add('bg-primary-container/20');
+        });
+    });
+
+    // Export buttons - find by text content
+    function findButtonByIcon(iconText) {
+        return Array.from(document.querySelectorAll('button')).find(btn =>
+            btn.textContent.includes(iconText) || btn.querySelector('.material-symbols-outlined')?.textContent.includes(iconText)
+        );
+    }
+
+    const pdfBtn = findButtonByIcon('picture_as_pdf');
+    const csvBtn = findButtonByIcon('csv');
+    const geoBtn = findButtonByIcon('public');
+
+    if (pdfBtn) pdfBtn.addEventListener('click', () => alert('Exporting PDF report...'));
+    if (csvBtn) csvBtn.addEventListener('click', () => alert('Exporting CSV data...'));
+    if (geoBtn) geoBtn.addEventListener('click', () => alert('Exporting GeoJSON...'));
+
+    // Verify target button
+    const verifyBtn = Array.from(document.querySelectorAll('button')).find(btn => btn.textContent.includes('VERIFY TARGET'));
+    if (verifyBtn) verifyBtn.addEventListener('click', () => {
+        alert('Target T-001 marked as VERIFIED. Report updated.');
+    });
+
+    // Mark false positive button
+    const falsePositiveBtn = Array.from(document.querySelectorAll('button')).find(btn => btn.textContent.includes('MARK FALSE POSITIVE'));
+    if (falsePositiveBtn) falsePositiveBtn.addEventListener('click', () => {
+        alert('Target T-001 marked as FALSE POSITIVE. AI model updated.');
+    });
+</script>
+</body></html>

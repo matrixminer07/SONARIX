@@ -77,10 +77,8 @@
             padding:18px 6vw; background:rgba(4,10,18,0.72); backdrop-filter:blur(6px);
             border-bottom:1px solid var(--sx-border);
         }
-        .nav-mark{ display:flex; align-items:center; gap:9px; }
-        .nav-mark svg{ width:22px; height:22px; }
-        .nav-mark span{ font-family:var(--font-mono); font-weight:600; font-size:16px; letter-spacing:3px; }
-        .nav-mark span em{ font-style:normal; color:var(--sx-teal); }
+        .nav-mark{ display:flex; align-items:center; }
+        .nav-mark img{ display:block; width:140px; height:52px; object-fit:contain; filter:drop-shadow(0 0 8px rgba(45,212,191,0.35)); }
         .nav-status{
             display:flex; align-items:center; gap:7px; font-family:var(--font-mono);
             font-size:10.5px; letter-spacing:1px; color:var(--sx-teal-dim); text-transform:uppercase;
@@ -238,15 +236,12 @@
 
     <nav>
         <div class="nav-mark">
-            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10.5" stroke="#2dd4bf" stroke-width="1.2" opacity="0.5"/><circle cx="12" cy="12" r="6.5" stroke="#2dd4bf" stroke-width="1.2" opacity="0.75"/><circle cx="12" cy="12" r="1.8" fill="#67e8f9"/><line x1="12" y1="12" x2="12" y2="2" stroke="#67e8f9" stroke-width="1.2"/></svg>
-            <span>SONAR<em>IX</em></span>
+            <img src="/logo-transparent-cropped.png" alt="SONARIX" />
         </div>
-        <div class="nav-status"><span class="nav-dot"></span>System operational</div>
     </nav>
 
     <header class="hero">
         <div>
-            <div class="eyebrow">SIH 2026 · Marine survey intelligence</div>
             <h1 class="title">AI-powered underwater<br/><em>debris &amp; anomaly</em> detection.</h1>
             <p class="tagline">Automated analysis of side-scan sonar imagery for marine debris detection and survey prioritization.</p>
             <p class="subtitle">Upload a survey, let SONARIX flag debris and unknown anomalies, verify with one click, export a geotagged report — built for survey operators, environmental teams, and AUV mission planners.</p>
